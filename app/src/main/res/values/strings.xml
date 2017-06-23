@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name">TripOffbeat</string>
+
+    <string name="title_activity_options_list">OptionsList</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <string-array name="min_budget">
+        <item>1000</item>
+        <item>3000</item>
+        <item>5000</item>
+        <item>7000</item>
+        <item>9000</item>
+        <item>11000</item>
+        <item>13000</item>
+        <item>15000</item>
+        <item>20000</item>
+        <item>25000</item>
+        <item>30000</item>
+        <item>35000</item>
+        <item>40000</item>
+        <item>60000</item>
+        <item>80000</item>
+        <item>100000</item>
+        <item>120000</item>
+        <item>140000</item>
+    </string-array>
+
+    <string-array name="max_budget">
+        <item>9000</item>
+        <item>11000</item>
+        <item>13000</item>
+        <item>15000</item>
+        <item>20000</item>
+        <item>25000</item>
+        <item>30000</item>
+        <item>35000</item>
+        <item>40000</item>
+        <item>60000</item>
+        <item>80000</item>
+        <item>100000</item>
+        <item>120000</item>
+        <item>140000</item>
+    </string-array>
+
+    <string name="title_activity_maps">Map</string>
+</resources>
