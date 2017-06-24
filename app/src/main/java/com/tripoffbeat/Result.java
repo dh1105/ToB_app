@@ -1,5 +1,6 @@
 package com.tripoffbeat;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -59,6 +60,7 @@ public class Result extends ListActivity {
     private static final String TAG_DIST = "dist_del";
     public static final String TAG = "Result";
     String name, price, s, c, dd, dist_delkm, time_del;
+    ActionBar actionBar;
 
     // products JSONArray
     JSONArray resorts = null;
@@ -106,12 +108,9 @@ public class Result extends ListActivity {
         activity = in.getStringExtra("activity");
         dist_delkm = in.getStringExtra("distance");
         time_del = in.getStringExtra("time");
-        Log.d("Parameters received: ", states);
-        Log.d("Parameters received: ", min_budget);
-        Log.d("Parameters received: ", max_budget);
-        Log.d("Parameters received: ", activity);
-        Log.d("Parameters received: ", dist_delkm);
-        Log.d("Parameters received: ", time_del);
+        actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         //restoreData();
         lv = getListView();
         lv.setOnItemClickListener(new OnItemClickListener() {
@@ -268,6 +267,27 @@ public class Result extends ListActivity {
             if(resultCode == RESULT_OK) {
                 restoreData();
             }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actionbar, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case R.id.back:
+                Intent in =  new Intent(Result.this, OptionList.class);
+                startActivity(in);
+                finish();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
