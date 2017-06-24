@@ -1,5 +1,6 @@
 package com.tripoffbeat;
 
+import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -7,6 +8,9 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
@@ -25,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -35,28 +40,22 @@ import java.util.List;
 public class ResortDetails extends AppCompatActivity implements  View.OnClickListener, OnMapReadyCallback {
 
     private static String res_details = "http://139.59.34.30/get_details.php";
-    private static String get_activity_array = "http://139.59.34.30/get_activity_array.php";
     private static final String TAG_RES_DES = "resort_desc";
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_LAT = "latitude";
     private static final String TAG_LONG = "longitude";
     private static final String TAG_TIME = "time";
-    private static final String TAG_ACT = "activity_name";
     public static final String TAG = "ResortDetails";
     double latitude;
     double longitude;
     private GoogleMap mMap;
     Intent i;
-    String res_name, d, activity, act_f;
-    String act_name[];
+    String res_name, d;
     Button back;
     // Progress Dialog
     ProgressDialog pDialog;
-    TextView res_n, description, dist, time, act_array;
+    TextView res_n, description, dist, time;
     View parentLayout;
-    JSONArray act = null;
-    //List<String> activity_list = new ArrayList<>();
-    ArrayList<HashMap<String, String>> activity_list;
 
     // Creating JSON Parser object
     JSONparser jParser = new JSONparser();
@@ -65,7 +64,6 @@ public class ResortDetails extends AppCompatActivity implements  View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resort_details);
-        activity_list = new ArrayList<HashMap<String, String>>();
         parentLayout = findViewById(android.R.id.content);
         res_n = (TextView) findViewById(R.id.res_n);
         description = (TextView) findViewById(R.id.description);
@@ -170,49 +168,37 @@ public class ResortDetails extends AppCompatActivity implements  View.OnClickLis
                     Log.d("Lat: ", Double.toString(latitude));
                     Log.d("Lon: ", Double.toString(longitude));
                 }
-                }catch(Exception e){
+                }catch(NullPointerException e){
                 pDialog.dismiss();
                 e.printStackTrace();
-                Snackbar.make(parentLayout, "Error connecting to the server", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(parentLayout, "Error: please check your internet connection", Snackbar.LENGTH_INDEFINITE)
                         .setAction("CLOSE", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent i = new Intent(getApplicationContext(), OptionList.class);
-                                startActivity(i);
+                                Bundle data = getIntent().getExtras();
+                                i = new Intent(ResortDetails.this, Result.class);
+                                i.putExtras(data);
+                                setResult(RESULT_OK, getIntent());
                                 finish();
                             }
                         })
                         .setActionTextColor(getResources().getColor(android.R.color.holo_blue_dark ))
                         .show();
-                }
-            try{
-                JSONObject json = jParser.makeHttpRequest9(get_activity_array, res_name);
-                Log.d("Details : ", json.toString());
-                int s = json.getInt(TAG_SUCCESS);
-
-                if(s==1){
-                    act = json.getJSONArray(TAG_ACT);
-                    for(int i = 0; i < act.length(); i++){
-                        activity = act.getString(i);
-                        HashMap<String, String> map = new HashMap<>();
-                        map.put(TAG_ACT, activity);
-                        activity_list.add(map);
-                        Log.d("List: ", activity_list.toString());
-                    }
-                }
-            } catch (Exception f){
+                } catch(JSONException f){
                 pDialog.dismiss();
                 f.printStackTrace();
                 Snackbar.make(parentLayout, "Error connecting to the server", Snackbar.LENGTH_INDEFINITE)
                         .setAction("CLOSE", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent i = new Intent(getApplicationContext(), OptionList.class);
-                                startActivity(i);
+                                Bundle data = getIntent().getExtras();
+                                i = new Intent(ResortDetails.this, Result.class);
+                                i.putExtras(data);
+                                setResult(RESULT_OK, getIntent());
                                 finish();
                             }
                         })
-                        .setActionTextColor(getResources().getColor(android.R.color.holo_blue_dark))
+                        .setActionTextColor(getResources().getColor(android.R.color.holo_blue_dark ))
                         .show();
             }
 

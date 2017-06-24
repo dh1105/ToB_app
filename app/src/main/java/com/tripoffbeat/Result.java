@@ -25,6 +25,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,8 +59,9 @@ public class Result extends ListActivity {
     private static final String TAG_STATE = "name";
     private static final String TAG_CITIES = "cities";
     private static final String TAG_DIST = "dist_del";
+    private static final String TAG_ROOM_NAME = "room_name";
     public static final String TAG = "Result";
-    String name, price, s, c, dd, dist_delkm, time_del;
+    String name, price, s, c, dd, dist_delkm, time_del, rn;
     ActionBar actionBar;
 
     // products JSONArray
@@ -68,6 +70,7 @@ public class Result extends ListActivity {
     JSONArray sname = null;
     JSONArray cities = null;
     JSONArray dist_del = null;
+    JSONArray room_name = null;
 
     RadioButton sort_price;
     RadioButton sort_alpha, sort_cities, sort_dist, sort_state;
@@ -75,6 +78,8 @@ public class Result extends ListActivity {
 
     ArrayList<HashMap<String, String>> resortsList;
     List<String> stringList = new ArrayList<>();
+    List<String> priceList= new ArrayList<>();
+    List<String> roomTypeList = new ArrayList<>();
     private SelectionAdapter mAdapter;
     View parentLayout;
     ListView lv;
@@ -120,7 +125,6 @@ public class Result extends ListActivity {
                 // getting values from selected ListItem
                 res_name = ((TextView) view.findViewById(R.id.name)).getText().toString();
                 d = ((TextView) view.findViewById(R.id.distance_from_delhi)).getText().toString();
-                //view.setBackgroundColor(getResources().getColor(android.R.color.white));
                 Bundle data = saveData();
                 Intent in = new Intent(Result.this, ResortDetails.class);
                 in.putExtra(TAG_NAME, res_name);
@@ -129,7 +133,7 @@ public class Result extends ListActivity {
                 startActivityForResult(in, 1);
             }
         });
-        mAdapter = new SelectionAdapter(this, R.layout.activity_result, R.id.name, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST });
+        mAdapter = new SelectionAdapter(this, R.layout.activity_result, R.id.name, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME});
         setListAdapter(mAdapter);
         lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         getListView().setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
@@ -152,18 +156,28 @@ public class Result extends ListActivity {
             public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.email:
+                        String room_type;
                         String [] mail_list = new String[stringList.size()];
-                        for(int i = 0; i<stringList.size(); i++){
+                        String [] room_list = new String[roomTypeList.size()];
+                        String [] room_price_list = new String[priceList.size()];
+                        for(int i = 0; i<stringList.size() & i<roomTypeList.size() & i<priceList.size(); i++){
                             mail_list[i] = stringList.get(i);
-                            Log.d("LIST: ", mail_list[i]);
+                            room_list[i] = roomTypeList.get(i);
+                            room_price_list[i] = priceList.get(i);
+                            Log.d("LIST1: ", mail_list[i]);
+                            Log.d("LIST2: ", room_list[i]);
+                            Log.d("LIST3: ", room_price_list[i]);
                         }
-                        Log.d("LIST: ", "arr: " + Arrays.toString(mail_list));
                         Bundle b = new Bundle();
                         b.putStringArray("mail_list", mail_list);
+                        b.putStringArray("room_list", room_list);
+                        b.putStringArray("room_price_list", room_price_list);
+                        Bundle data = saveData();
+                        Log.d("Data: ", data.toString());
                         in = new Intent(Result.this, mail.class);
                         in.putExtras(b);
-                        startActivity(in);
-                        finish();
+                        in.putExtras(data);
+                        startActivityForResult(in, 1);
                         break;
 
 
@@ -186,16 +200,26 @@ public class Result extends ListActivity {
                     nr++;
                     mAdapter.setNewSelection(position, checked);
                     String get_list = resortsList.get(position).get(TAG_NAME);
+                    String get_price = resortsList.get(position).get(TAG_PRICE);
+                    String room_type = resortsList.get(position).get(TAG_ROOM_NAME);
                     stringList.add(get_list);
+                    priceList.add(get_price);
+                    roomTypeList.add(room_type);
                     Log.d("String List: ", stringList.toString());
+                    Log.d("String List: ", priceList.toString());
+                    Log.d("String List: ", roomTypeList.toString());
                 } else {
                     nr--;
                     mAdapter.removeSelection(position);
                     int i;
                     for(i = 0 ; i < stringList.size(); i++){
-                        if(stringList.get(i).equals(resortsList.get(position).get(TAG_NAME))){
+                        if(stringList.get(i).equals(resortsList.get(position).get(TAG_NAME)) && priceList.get(i).equals(resortsList.get(position).get(TAG_PRICE)) && roomTypeList.get(i).equals(resortsList.get(position).get(TAG_ROOM_NAME))){
                             stringList.remove(i);
+                            priceList.remove(i);
+                            roomTypeList.remove(i);
                             Log.d("String List: ", stringList.toString());
+                            Log.d("String List: ", priceList.toString());
+                            Log.d("String List: ", roomTypeList.toString());
                             break;
                         }
                     }
@@ -219,7 +243,7 @@ public class Result extends ListActivity {
                     case R.id.sort_alpha:
                         Collections.sort(resortsList, new MapComparator(TAG_NAME));
                         Log.d("List alpha: ", resortsList.toString());
-                        ListAdapter adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi});
+                        ListAdapter adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
                         // updating listview
                         setListAdapter(adapter);
                         break;
@@ -227,7 +251,7 @@ public class Result extends ListActivity {
                     case R.id.sort_price:
                         Collections.sort(resortsList, new MapComparator(TAG_PRICE));
                         Log.d("List price: ", resortsList.toString());
-                        ListAdapter adapter1 = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi});
+                        ListAdapter adapter1 = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
                         // updating listview
                         setListAdapter(adapter1);
                         break;
@@ -235,7 +259,7 @@ public class Result extends ListActivity {
                     case R.id.sort_states:
                         Collections.sort(resortsList, new MapComparator(TAG_STATE));
                         Log.d("List state: ", resortsList.toString());
-                        ListAdapter adapter2 = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi});
+                        ListAdapter adapter2 = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
                         // updating listview
                         setListAdapter(adapter2);
                         break;
@@ -243,7 +267,7 @@ public class Result extends ListActivity {
                     case R.id.sort_city:
                         Collections.sort(resortsList, new MapComparator(TAG_CITIES));
                         Log.d("List alpha: ", resortsList.toString());
-                        ListAdapter adapter3 = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi});
+                        ListAdapter adapter3 = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
                         // updating listview
                         setListAdapter(adapter3);
                         break;
@@ -251,7 +275,7 @@ public class Result extends ListActivity {
                     case R.id.sort_dist:
                         Collections.sort(resortsList, new MapComparator(TAG_DIST));
                         Log.d("List alpha: ", resortsList.toString());
-                        ListAdapter adapter4 = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi});
+                        ListAdapter adapter4 = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
                         // updating listview
                         setListAdapter(adapter4);
                         break;
@@ -279,16 +303,7 @@ public class Result extends ListActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
-            case R.id.back:
-                Intent in =  new Intent(Result.this, OptionList.class);
-                startActivity(in);
-                finish();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     private class MapComparator implements Comparator<Map<String, String>> {
@@ -509,11 +524,12 @@ public class Result extends ListActivity {
                     sname = json.getJSONArray(TAG_STATE);
                     cities = json.getJSONArray(TAG_CITIES);
                     dist_del = json.getJSONArray(TAG_DIST);
+                    room_name = json.getJSONArray(TAG_ROOM_NAME);
 
                     int i;
 
                     // looping through All resorts
-                    for (i = 0; i < resorts.length() & i < rates.length() & i < sname.length() & i < cities.length() & i < dist_del.length(); i++) {
+                    for (i = 0; i < resorts.length() & i < rates.length() & i < sname.length() & i < cities.length() & i < dist_del.length() & i < room_name.length(); i++) {
                         //JSONObject c = resorts.getJSONObject(i);
                         //JSONObject d = rates.getJSONObject(i);
 
@@ -523,6 +539,7 @@ public class Result extends ListActivity {
                         s = sname.getString(i);
                         c = cities.getString(i);
                         dd = dist_del.getString(i);
+                        rn = room_name.getString(i);
 
                         // creating new HashMap
                         HashMap<String, String> map = new HashMap<String, String>();
@@ -533,6 +550,7 @@ public class Result extends ListActivity {
                         map.put(TAG_STATE, s);
                         map.put(TAG_CITIES, c);
                         map.put(TAG_DIST, dd);
+                        map.put(TAG_ROOM_NAME, rn);
 
                         // adding HashList to ArrayList
                         resortsList.add(map);
@@ -542,33 +560,30 @@ public class Result extends ListActivity {
                 } else {
                     // no resorts found
                     pDialog.dismiss();
-                    Snackbar.make(parentLayout, "No resorts found", Snackbar.LENGTH_INDEFINITE)
-                            .setAction("CLOSE", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    Intent i = new Intent(getApplicationContext(), OptionList.class);
-                                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivity(i);
-                                }
-                            })
-                            .setActionTextColor(getResources().getColor(android.R.color.holo_blue_dark ))
-                            .show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(Result.this ,"No resorts found", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                pDialog.dismiss();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Result.this ,"Error connecting to server", Toast.LENGTH_LONG).show();
+                    }
+                });
             } catch(NullPointerException e){
                 pDialog.dismiss();
-                Snackbar.make(parentLayout, "Error connecting to the server", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("CLOSE", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent i = new Intent(getApplicationContext(), OptionList.class);
-                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                startActivity(i);
-                            }
-                        })
-                        .setActionTextColor(getResources().getColor(android.R.color.holo_blue_dark ))
-                        .show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Result.this ,"Error: please check your internet connection", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
 
             return null;
@@ -588,7 +603,7 @@ public class Result extends ListActivity {
                     /**
                      * Updating parsed JSON data into ListView
                      * */
-                    ListAdapter adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi});
+                    ListAdapter adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
                     // updating listview
                     setListAdapter(adapter);
                 }

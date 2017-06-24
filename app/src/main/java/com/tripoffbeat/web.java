@@ -32,9 +32,11 @@ public class web extends AppCompatActivity {
     WebView webView;
     private final static String TAG = "web";
     String[] mail_list;
+    String[] room_list;
+    String[] room_price_list;
     String url = "http://139.59.34.30/quotation/";
-    String btn_ci, btn_co, n, a, k, r, m, price, distance, activity, state, d, act_f;
-    String dist = "Delhi", room_type = "2 Adults", ex = "1";
+    String btn_ci, btn_co, n, a, k, r, m, price, distance, activity, state, d, act_f, rn;
+    String dist = "Delhi", ex = "1";
     Intent in;
     ProgressDialog pDialog;
     View parentLayout;
@@ -62,6 +64,8 @@ public class web extends AppCompatActivity {
         if(act_i.equals("mail")) {
             Bundle b = this.getIntent().getExtras();
             mail_list = b.getStringArray("mail_list");
+            room_list = b.getStringArray("room_list");
+            room_price_list = b.getStringArray("room_price_list");
             btn_ci = in.getStringExtra("checkin");
             btn_co = in.getStringExtra("checkout");
             n = in.getStringExtra("name");
@@ -70,6 +74,7 @@ public class web extends AppCompatActivity {
             r = in.getStringExtra("rooms");
             m = in.getStringExtra("mail");
             d = in.getStringExtra("days");
+            rn = in.getStringExtra("room_type");
             new GetDetails().execute();
             webView.getSettings().setJavaScriptEnabled(true);
             webView.getSettings().setDomStorageEnabled(true);
@@ -99,9 +104,9 @@ public class web extends AppCompatActivity {
                             "var distFrom = document.getElementsByName('distance_from[]');" +
                             "distFrom[0].value = '" + dist + "';" +
                             "var roomType = document.getElementsByName('room_category[]');" +
-                            "roomType[0].value = '" + room_type + "';" +
+                            "roomType[0].value = '" + room_list[0] + "';" +
                             "var price = document.getElementsByName('package_price[]');" +
-                            "price[0].value = '" + price + "';" +
+                            "price[0].value = '" + room_price_list[0] + "';" +
                             "var distance = document.getElementsByName('distance[]');" +
                             "distance[0].value = '" + distance + "';" +
                             "var ex = document.getElementsByName('excursions[]');" +
@@ -197,10 +202,8 @@ public class web extends AppCompatActivity {
                 int s = json.getInt(TAG_SUCCESS);
 
                 if (s == 1) {
-                    JSONArray a = json.getJSONArray(TAG_PRICE);
                     JSONArray b = json.getJSONArray(TAG_DIST);
                     JSONArray d = json.getJSONArray(TAG_STATE);
-                    price = a.getString(0);
                     distance = b.getString(0);
                     state = d.getString(0);
                 }

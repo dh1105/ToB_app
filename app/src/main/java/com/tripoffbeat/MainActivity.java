@@ -82,9 +82,15 @@ public class MainActivity extends AppCompatActivity {
         // Get text from email and password field
         final String email = etEmail.getText().toString();
         final String password = etPassword.getText().toString();
-
-        // Initialize  AsyncLogin() class with email and password
-        new AsyncLogin().execute(email,password);
+        if(etEmail.getText().toString().equals("") && etPassword.getText().toString().equals("")){
+            Toast.makeText(MainActivity.this, "Please enter email and password", Toast.LENGTH_LONG).show();
+        } else if(etEmail.getText().toString().equals("")){
+            Toast.makeText(MainActivity.this, "Please fill the email field", Toast.LENGTH_LONG).show();
+        }else if(etPassword.getText().toString().equals("")){
+            Toast.makeText(MainActivity.this, "Please fill the password field", Toast.LENGTH_LONG).show();
+        } else{
+            new AsyncLogin().execute(email,password);
+        }
 
     }
 

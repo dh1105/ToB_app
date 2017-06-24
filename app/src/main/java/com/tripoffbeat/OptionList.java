@@ -327,15 +327,14 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
                 break;
 
             case R.id.clear:
-                r.clearCheck();
-                /*if(t != null){
-                    t.clear();
+                if(dist_delkm.isChecked() || time_del.isChecked()){
+                    r.clearCheck();
+                    dist.setVisibility(View.INVISIBLE);
+                    Toast.makeText(OptionList.this, "Selection cleared", Toast.LENGTH_SHORT).show();
                 }
-                else if(km != null){
-                    km.clear();
-                }*/
-                dist.setVisibility(View.INVISIBLE);
-                Toast.makeText(OptionList.this, "Selection cleared", Toast.LENGTH_SHORT).show();
+                else{
+                    Toast.makeText(OptionList.this, "Nothing selected", Toast.LENGTH_SHORT).show();
+                }
                 break;
 
             default:

@@ -1,10 +1,15 @@
 package com.tripoffbeat;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -18,16 +23,21 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class mail extends AppCompatActivity implements View.OnClickListener {
+public class mail extends Activity implements View.OnClickListener {
 
     Button email;
     String[] mail_lists;
+    String[] room_list;
+    String[] room_price_list;
+    String rn;
     EditText btn_checkin, btn_checkout, name, adults, kids, rooms, mail, days;
     private static final String TAG = "mail";
     Calendar myCalendar = Calendar.getInstance();
     DatePickerDialog.OnDateSetListener date;
     DatePickerDialog.OnDateSetListener date1;
     String btn_ci, btn_co, n, a, k, r, m, d;
+    ActionBar actionBar;
+    Intent i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +51,8 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
         kids = (EditText) findViewById(R.id.kids);
         rooms = (EditText) findViewById(R.id.rooms);
         days = (EditText) findViewById(R.id.days);
+        actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         btn_checkin.setOnClickListener(this);
         btn_checkout.setOnClickListener(this);
@@ -76,7 +88,12 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
         email.setOnClickListener(this);
         Bundle b = this.getIntent().getExtras();
         mail_lists = b.getStringArray("mail_list");
+        room_list = b.getStringArray("room_list");
+        room_price_list = b.getStringArray("room_price_list");
+        i = getIntent();
         Log.d("Mail List: ", "arr: " + Arrays.toString(mail_lists));
+        Log.d("Room name List: ", "arr: " + Arrays.toString(room_list));
+        Log.d("Room price List: ", "arr: " + Arrays.toString(room_price_list));
     }
 
     @Override
@@ -97,6 +114,8 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
                 else{
                     Bundle b = new Bundle();
                     b.putStringArray("mail_list", mail_lists);
+                    b.putStringArray("room_list", room_list);
+                    b.putStringArray("room_price_list", room_price_list);
                     Intent i = new Intent(mail.this, web.class);
                     i.putExtra("checkin", btn_ci);
                     i.putExtra("checkout", btn_co);
@@ -124,6 +143,18 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
             default:
                 break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actionbar, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        return super.onOptionsItemSelected(item);
     }
 
     private void updateLabel() {

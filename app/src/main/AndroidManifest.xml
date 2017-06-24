@@ -41,7 +41,10 @@
         </activity>
         <activity android:name=".OptionList"
             android:launchMode="singleTop"/>
-        <activity android:name=".Result" />
+        <activity android:name=".Result"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
+            android:parentActivityName="com.tripoffbeat.OptionList"/>
         <activity android:name=".ResortDetails" />
 
         <uses-library
@@ -53,9 +56,11 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AI**************************" />
+            android:value="AIzaSyAvprwSa0ku9_V9yeib7N_l32Hy4tc-3vM" />
 
-        <activity android:name=".mail"></activity>
+        <activity android:name=".mail"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
+            android:parentActivityName="com.tripoffbeat.Result"/>
     </application>
 
 </manifest>
