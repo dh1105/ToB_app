@@ -45,7 +45,8 @@
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
             android:parentActivityName="com.tripoffbeat.OptionList"/>
-        <activity android:name=".ResortDetails" />
+        <activity android:name=".ResortDetails"
+            android:parentActivityName="com.tripoffbeat.Result"/>
 
         <uses-library
             android:name="com.google.android.maps"
@@ -59,7 +60,9 @@
             android:value="AIzaSyAvprwSa0ku9_V9yeib7N_l32Hy4tc-3vM" />
 
         <activity android:name=".mail"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
+            android:parentActivityName="com.tripoffbeat.Result"/>
+
+        <activity android:name=".web"
             android:parentActivityName="com.tripoffbeat.Result"/>
     </application>
 

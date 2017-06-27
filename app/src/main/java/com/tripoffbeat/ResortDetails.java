@@ -37,7 +37,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class ResortDetails extends AppCompatActivity implements  View.OnClickListener, OnMapReadyCallback {
+public class ResortDetails extends AppCompatActivity implements OnMapReadyCallback {
 
     private static String res_details = "http://139.59.34.30/get_details.php";
     private static final String TAG_RES_DES = "resort_desc";
@@ -69,8 +69,6 @@ public class ResortDetails extends AppCompatActivity implements  View.OnClickLis
         description = (TextView) findViewById(R.id.description);
         dist = (TextView) findViewById(R.id.dist);
         time = (TextView) findViewById(R.id.time);
-        back = (Button) findViewById(R.id.back);
-        back.setOnClickListener(this);
         new GetResortDetails().execute();
         i = getIntent();
         res_name = i.getStringExtra("resort_name");
@@ -81,19 +79,15 @@ public class ResortDetails extends AppCompatActivity implements  View.OnClickLis
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.back:
-                Bundle data = getIntent().getExtras();
-                i = new Intent(ResortDetails.this, Result.class);
-                i.putExtras(data);
-                setResult(RESULT_OK, getIntent());
-                finish();
-                break;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actionbar, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-            default:
-                break;
-        }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

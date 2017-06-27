@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int READ_TIMEOUT=15000;
     private EditText etEmail;
     private EditText etPassword;
+    String email, password;
     View parentLayout;
 
     @Override
@@ -80,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
     public void checkLogin(View arg0) {
 
         // Get text from email and password field
-        final String email = etEmail.getText().toString();
-        final String password = etPassword.getText().toString();
+        email = etEmail.getText().toString();
+        password = etPassword.getText().toString();
         if(etEmail.getText().toString().equals("") && etPassword.getText().toString().equals("")){
             Toast.makeText(MainActivity.this, "Please enter email and password", Toast.LENGTH_LONG).show();
         } else if(etEmail.getText().toString().equals("")){
@@ -206,11 +208,28 @@ public class MainActivity extends AppCompatActivity {
             }else if (result.equals("false") || result.equals("unsuccessful")){
 
                 // If username and password does not match display a error message
-                Toast.makeText(MainActivity.this, "Invalid email or password", Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, "Invalid email or password", Toast.LENGTH_LONG).show();
+                Snackbar.make(parentLayout, "Invalid email or password", Snackbar.LENGTH_LONG)
+                        .setAction("CLOSE", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                            }
+                        })
+                        .setActionTextColor(getResources().getColor(android.R.color.holo_blue_dark ))
+                        .show();
 
             } else if (result.equals("exception")) {
 
-                Toast.makeText(MainActivity.this, "Unable to connect", Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, "Unable to connect", Toast.LENGTH_LONG).show();
+                Snackbar.make(parentLayout, "Please check your internet connection", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("RETRY", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                new AsyncLogin().execute(email,password);
+                            }
+                        })
+                        .setActionTextColor(getResources().getColor(android.R.color.holo_blue_dark ))
+                        .show();
 
             }
         }

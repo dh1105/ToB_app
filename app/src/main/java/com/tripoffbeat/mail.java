@@ -1,7 +1,5 @@
 package com.tripoffbeat;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,7 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class mail extends Activity implements View.OnClickListener {
+public class mail extends AppCompatActivity implements View.OnClickListener {
 
     Button email;
     String[] mail_lists;
@@ -36,7 +34,6 @@ public class mail extends Activity implements View.OnClickListener {
     DatePickerDialog.OnDateSetListener date;
     DatePickerDialog.OnDateSetListener date1;
     String btn_ci, btn_co, n, a, k, r, m, d;
-    ActionBar actionBar;
     Intent i;
 
     @Override
@@ -51,8 +48,6 @@ public class mail extends Activity implements View.OnClickListener {
         kids = (EditText) findViewById(R.id.kids);
         rooms = (EditText) findViewById(R.id.rooms);
         days = (EditText) findViewById(R.id.days);
-        actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
 
         btn_checkin.setOnClickListener(this);
         btn_checkout.setOnClickListener(this);

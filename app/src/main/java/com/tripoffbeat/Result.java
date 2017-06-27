@@ -3,11 +3,13 @@ package com.tripoffbeat;
 import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +25,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.SearchView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +65,6 @@ public class Result extends ListActivity {
     private static final String TAG_ROOM_NAME = "room_name";
     public static final String TAG = "Result";
     String name, price, s, c, dd, dist_delkm, time_del, rn;
-    ActionBar actionBar;
 
     // products JSONArray
     JSONArray resorts = null;
@@ -113,7 +115,7 @@ public class Result extends ListActivity {
         activity = in.getStringExtra("activity");
         dist_delkm = in.getStringExtra("distance");
         time_del = in.getStringExtra("time");
-        actionBar = getActionBar();
+        ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         //restoreData();
@@ -125,12 +127,13 @@ public class Result extends ListActivity {
                 // getting values from selected ListItem
                 res_name = ((TextView) view.findViewById(R.id.name)).getText().toString();
                 d = ((TextView) view.findViewById(R.id.distance_from_delhi)).getText().toString();
-                Bundle data = saveData();
+                //Bundle data = saveData();
                 Intent in = new Intent(Result.this, ResortDetails.class);
                 in.putExtra(TAG_NAME, res_name);
                 in.putExtra(TAG_DIST, d);
-                in.putExtras(data);
-                startActivityForResult(in, 1);
+                //in.putExtras(data);
+                //startActivityForResult(in, 1);
+                startActivity(in);
             }
         });
         mAdapter = new SelectionAdapter(this, R.layout.activity_result, R.id.name, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME});
@@ -172,12 +175,12 @@ public class Result extends ListActivity {
                         b.putStringArray("mail_list", mail_list);
                         b.putStringArray("room_list", room_list);
                         b.putStringArray("room_price_list", room_price_list);
-                        Bundle data = saveData();
-                        Log.d("Data: ", data.toString());
+                        //Bundle data = saveData();
                         in = new Intent(Result.this, mail.class);
                         in.putExtras(b);
-                        in.putExtras(data);
-                        startActivityForResult(in, 1);
+                        //in.putExtras(data);
+                        //startActivityForResult(in, 1);
+                        startActivity(in);
                         break;
 
 
@@ -192,6 +195,8 @@ public class Result extends ListActivity {
             public void onDestroyActionMode(android.view.ActionMode mode) {
                 mAdapter.clearSelection();
                 stringList.clear();
+                roomTypeList.clear();
+                priceList.clear();
             }
 
             @Override
@@ -285,14 +290,14 @@ public class Result extends ListActivity {
         });
     }
 
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if(requestCode == 1) {
             if(resultCode == RESULT_OK) {
                 restoreData();
             }
         }
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -366,7 +371,7 @@ public class Result extends ListActivity {
         }
     }
 
-    private Bundle saveData() {
+    /*private Bundle saveData() {
         Log.d(TAG, "Started saving state");
         Bundle data = new Bundle();
 
@@ -375,9 +380,9 @@ public class Result extends ListActivity {
         data.putString(max_budget, in.getStringExtra("max_budget"));
         data.putString(activity, in.getStringExtra("activity"));
         return data;
-    }
+    }*/
 
-    private void restoreData() {
+    /*private void restoreData() {
         Log.d(TAG, "Started restoring state");
 
         Bundle data = getIntent().getExtras();
@@ -386,7 +391,7 @@ public class Result extends ListActivity {
         min_budget = data.getString(min_budget);
         max_budget = data.getString(max_budget);
         activity = data.getString(activity);
-    }
+    }*/
 
     @Override
     protected void onStart() {
@@ -427,6 +432,7 @@ public class Result extends ListActivity {
 
     private class LoadAllResorts extends AsyncTask<String, String, String> {
 
+        String result = "";
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -530,8 +536,6 @@ public class Result extends ListActivity {
 
                     // looping through All resorts
                     for (i = 0; i < resorts.length() & i < rates.length() & i < sname.length() & i < cities.length() & i < dist_del.length() & i < room_name.length(); i++) {
-                        //JSONObject c = resorts.getJSONObject(i);
-                        //JSONObject d = rates.getJSONObject(i);
 
                         // Storing each json item in variable
                         name = resorts.getString(i);
@@ -563,16 +567,37 @@ public class Result extends ListActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            /*Snackbar.make(parentLayout, "No resorts found", Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("CLOSE", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            Intent in = new Intent(Result.this, OptionList.class);
+                                            startActivity(in);
+                                            finish();
+                                        }
+                                    })
+                                    .setActionTextColor(getResources().getColor(android.R.color.holo_blue_dark ))
+                                    .show();*/
                             Toast.makeText(Result.this ,"No resorts found", Toast.LENGTH_LONG).show();
                         }
                     });
                 }
             } catch (JSONException e) {
-                e.printStackTrace();
                 pDialog.dismiss();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        /*Snackbar.make(parentLayout, "Error connecting to the server", Snackbar.LENGTH_INDEFINITE)
+                                .setAction("CLOSE", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent in = new Intent(Result.this, OptionList.class);
+                                        startActivity(in);
+                                        finish();
+                                    }
+                                })
+                                .setActionTextColor(getResources().getColor(android.R.color.holo_blue_dark ))
+                                .show();*/
                         Toast.makeText(Result.this ,"Error connecting to server", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -581,6 +606,17 @@ public class Result extends ListActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        /*Snackbar.make(parentLayout, "Error: please check your internet connection", Snackbar.LENGTH_INDEFINITE)
+                                .setAction("CLOSE", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent in = new Intent(Result.this, OptionList.class);
+                                        startActivity(in);
+                                        finish();
+                                    }
+                                })
+                                .setActionTextColor(getResources().getColor(android.R.color.holo_blue_dark ))
+                                .show();*/
                         Toast.makeText(Result.this ,"Error: please check your internet connection", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -596,7 +632,6 @@ public class Result extends ListActivity {
         protected void onPostExecute(String file_url) {
             // dismiss the dialog after getting all resorts
             pDialog.dismiss();
-
             // updating UI from Background Thread
             runOnUiThread(new Runnable() {
                 public void run() {
