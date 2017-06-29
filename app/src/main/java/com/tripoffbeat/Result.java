@@ -277,44 +277,88 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
                 switch(checkedId){
                     case R.id.sort_alpha:
-                        Collections.sort(resortsList, new MapComparator(TAG_NAME));
-                        Log.d("List alpha: ", resortsList.toString());
-                        adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
-                        // updating listview
-                        lv.setAdapter(adapter);
-                        break;
+                        if(filter_resort_list != null){
+                            Collections.sort(filter_resort_list, new MapComparator(TAG_NAME));
+                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+                            // updating listview
+                            lv.setAdapter(adapter);
+                            break;
+                        }
+                        else {
+                            Collections.sort(resortsList, new MapComparator(TAG_NAME));
+                            Log.d("List alpha: ", resortsList.toString());
+                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
+                            // updating listview
+                            lv.setAdapter(adapter);
+                            break;
+                        }
 
                     case R.id.sort_price:
-                        Collections.sort(resortsList, new MapComparator(TAG_PRICE));
-                        Log.d("List price: ", resortsList.toString());
-                        adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
-                        // updating listview
-                        lv.setAdapter(adapter);
-                        break;
+                        if(filter_resort_list != null){
+                            Collections.sort(filter_resort_list, new MapComparator(TAG_PRICE));
+                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+                            // updating listview
+                            lv.setAdapter(adapter);
+                        }
+                        else {
+                            Collections.sort(resortsList, new MapComparator(TAG_PRICE));
+                            Log.d("List price: ", resortsList.toString());
+                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
+                            // updating listview
+                            lv.setAdapter(adapter);
+                            break;
+                        }
 
                     case R.id.sort_states:
-                        Collections.sort(resortsList, new MapComparator(TAG_STATE));
-                        Log.d("List state: ", resortsList.toString());
-                        adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
-                        // updating listview
-                        lv.setAdapter(adapter);
-                        break;
+                        if(filter_resort_list != null){
+                            Collections.sort(filter_resort_list, new MapComparator(TAG_STATE));
+                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+                            // updating listview
+                            lv.setAdapter(adapter);
+                            break;
+                        }
+                        else {
+                            Collections.sort(resortsList, new MapComparator(TAG_STATE));
+                            Log.d("List state: ", resortsList.toString());
+                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
+                            // updating listview
+                            lv.setAdapter(adapter);
+                            break;
+                        }
 
                     case R.id.sort_city:
-                        Collections.sort(resortsList, new MapComparator(TAG_CITIES));
-                        Log.d("List alpha: ", resortsList.toString());
-                        adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
-                        // updating listview
-                        lv.setAdapter(adapter);
-                        break;
+                        if(filter_resort_list != null){
+                            Collections.sort(filter_resort_list, new MapComparator(TAG_CITIES));
+                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+                            // updating listview
+                            lv.setAdapter(adapter);
+                            break;
+                        }
+                        else {
+                            Collections.sort(resortsList, new MapComparator(TAG_CITIES));
+                            Log.d("List alpha: ", resortsList.toString());
+                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
+                            // updating listview
+                            lv.setAdapter(adapter);
+                            break;
+                        }
 
                     case R.id.sort_dist:
-                        Collections.sort(resortsList, new MapComparator(TAG_DIST));
-                        Log.d("List alpha: ", resortsList.toString());
-                        adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
-                        // updating listview
-                        lv.setAdapter(adapter);
-                        break;
+                        if(filter_resort_list != null){
+                            Collections.sort(filter_resort_list, new MapComparator(TAG_DIST));
+                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+                            // updating listview
+                            lv.setAdapter(adapter);
+                            break;
+                        }
+                        else {
+                            Collections.sort(resortsList, new MapComparator(TAG_DIST));
+                            Log.d("List alpha: ", resortsList.toString());
+                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
+                            // updating listview
+                            lv.setAdapter(adapter);
+                            break;
+                        }
 
                 }
             }
@@ -385,25 +429,6 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
             FilterResults filterResults = new FilterResults();
             if(constraint != null && constraint.length()>0){
                 ArrayList<HashMap<String, String>> tempList = new ArrayList<>();
-                /*for(int i = 0; i<resortsList.size(); i++){
-                    if(resortsList.get(i).get(TAG_NAME).toLowerCase().contains(constraint.toString().toLowerCase()) ||
-                            resortsList.get(i).get(TAG_PRICE).toLowerCase().contains(constraint.toString().toLowerCase()) ||
-                            resortsList.get(i).get(TAG_CITIES).toLowerCase().contains(constraint.toString().toLowerCase()) ||
-                            resortsList.get(i).get(TAG_STATE).toLowerCase().contains(constraint.toString().toLowerCase()) ||
-                            resortsList.get(i).get(TAG_DIST).toLowerCase().contains(constraint.toString().toLowerCase()) ||
-                            resortsList.get(i).get(TAG_ROOM_NAME).toLowerCase().contains(constraint.toString().toLowerCase())){
-
-
-                        m.put(TAG_NAME, resortsList.get(i).get(TAG_NAME));
-                        m.put(TAG_PRICE, resortsList.get(i).get(TAG_PRICE));
-                        m.put(TAG_CITIES, resortsList.get(i).get(TAG_CITIES));
-                        m.put(TAG_STATE, resortsList.get(i).get(TAG_STATE));
-                        m.put(TAG_DIST, resortsList.get(i).get(TAG_DIST));
-                        m.put(TAG_ROOM_NAME, resortsList.get(i).get(TAG_ROOM_NAME));
-
-                        tempList.add(m);
-                    }
-                }*/
                 for(HashMap<String, String> u : resortsList){
                     if(u.get(TAG_NAME).toLowerCase().contains(constraint.toString().toLowerCase()) ||
                             u.get(TAG_PRICE).toLowerCase().contains(constraint.toString().toLowerCase()) ||
@@ -446,144 +471,26 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             filter_resort_list = (ArrayList<HashMap<String, String >>) results.values;
+            if (sort_price.isChecked()) {
+                Collections.sort(filter_resort_list, new MapComparator(TAG_PRICE));
+            }
+            else if(sort_alpha.isChecked()){
+                Collections.sort(filter_resort_list, new MapComparator(TAG_NAME));
+            }
+            else if(sort_dist.isChecked()){
+                Collections.sort(filter_resort_list, new MapComparator(TAG_DIST));
+            }
+            else if(sort_state.isChecked()){
+                Collections.sort(filter_resort_list, new MapComparator(TAG_STATE));
+            }
+            else if(sort_cities.isChecked()){
+                Collections.sort(filter_resort_list, new MapComparator(TAG_CITIES));
+            }
             adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
             // updating listview
             lv.setAdapter(adapter);
         }
     }
-
-    /*public class ResortListAdapter extends BaseAdapter implements Filterable {
-
-        private Result activity;
-        private ResortFilter resortFilter;
-        private Typeface typeface;
-        private ArrayList<HashMap<String , String>> resortList1;
-        private ArrayList<HashMap<String , String>> filteredresortList;
-        ViewHolder holder;
-
-        public ResortListAdapter(Result activity, ArrayList<HashMap<String, String>> resortList) {
-            this.activity = activity;
-            this.resortList1 = resortList;
-            this.filteredresortList = resortList;
-            typeface = Typeface.createFromAsset(activity.getAssets(), "fonts/vegur_2.otf");
-
-            getFilter();
-        }
-
-        @Override
-        public int getCount() {
-            return filteredresortList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return filteredresortList.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = layoutInflater.inflate(R.layout.activity_result, parent, false);
-                holder = new ViewHolder();
-                holder.res_name = (TextView) convertView.findViewById(R.id.name);
-                holder.price = (TextView) convertView.findViewById(R.id.price);
-                holder.cities = (TextView) convertView.findViewById(R.id.cities);
-                holder.states = (TextView) convertView.findViewById(R.id.states);
-                holder.dist_del = (TextView) convertView.findViewById(R.id.distance_from_delhi);
-                holder.room_type = (TextView) convertView.findViewById(R.id.room_type);
-                holder.res_name.setTypeface(typeface, Typeface.BOLD);
-                holder.res_name.setTextColor(activity.getResources().getColor(android.R.color.background_dark));
-                holder.price.setTypeface(typeface, Typeface.NORMAL);
-                holder.price.setTextColor(activity.getResources().getColor(android.R.color.background_dark));
-                holder.cities.setTypeface(typeface, Typeface.NORMAL);
-                holder.cities.setTextColor(activity.getResources().getColor(android.R.color.background_dark));
-                holder.states.setTypeface(typeface, Typeface.NORMAL);
-                holder.states.setTextColor(activity.getResources().getColor(android.R.color.background_dark));
-                holder.dist_del.setTypeface(typeface, Typeface.NORMAL);
-                holder.dist_del.setTextColor(activity.getResources().getColor(android.R.color.background_dark));
-                holder.room_type.setTypeface(typeface, Typeface.NORMAL);
-                holder.room_type.setTextColor(activity.getResources().getColor(android.R.color.background_dark));
-
-                convertView.setTag(holder);
-            } else {
-                // get view holder back
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-            holder.res_name.setText(resortsList.get(position).get(TAG_NAME));
-            holder.price.setText(resortsList.get(position).get(TAG_PRICE));
-            holder.cities.setText(resortsList.get(position).get(TAG_CITIES));
-            holder.states.setText(resortsList.get(position).get(TAG_STATE));
-            holder.dist_del.setText(resortsList.get(position).get(TAG_DIST));
-            holder.room_type.setText(resortsList.get(position).get(TAG_ROOM_NAME));
-
-            return convertView;
-        }
-
-        @Override
-        public Filter getFilter() {
-            if(resortFilter == null){
-                resortFilter = new ResortFilter();
-            }
-            return resortFilter;
-        }
-
-        class ViewHolder {
-            TextView res_name;
-            TextView price;
-            TextView cities;
-            TextView states;
-            TextView dist_del;
-            TextView room_type;
-        }
-
-        private class ResortFilter extends Filter {
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults filterResults = new FilterResults();
-                if(constraint != null && constraint.length()>0){
-                    ArrayList<HashMap<String, String>> us = new ArrayList<>();
-                    HashMap<String, String> temp = new HashMap<>();
-                    for(int i = 0; i < resortsList.size(); i++){
-                        if(holder.res_name.toString().toLowerCase().contains(constraint.toString().toLowerCase()) || holder.price.toString().toLowerCase().contains(constraint.toString().toLowerCase()) ||
-                                holder.cities.toString().toLowerCase().contains(constraint.toString().toLowerCase()) ||
-                                holder.states.toString().toLowerCase().contains(constraint.toString().toLowerCase()) ||
-                                holder.dist_del.toString().toLowerCase().contains(constraint.toString().toLowerCase()) ||
-                                holder.room_type.toString().toLowerCase().contains(constraint.toString().toLowerCase())){
-                            temp.put(TAG_NAME ,holder.res_name.toString());
-                            temp.put(TAG_PRICE, holder.price.toString());
-                            temp.put(TAG_CITIES, holder.cities.toString());
-                            temp.put(TAG_STATE, holder.states.toString());
-                            temp.put(TAG_DIST, holder.dist_del.toString());
-                            temp.put(TAG_ROOM_NAME, holder.room_type.toString());
-
-                            us.add(temp);
-                        }
-                    }
-
-                    filterResults.count = resortsList.size();
-                    filterResults.values = resortsList;
-                }
-
-                return filterResults;
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                filteredresortList = (ArrayList<HashMap<String, String>>) results.values;
-                notifyDataSetChanged();
-            }
-        }
-    }*/
-
 
     private class MapComparator implements Comparator<Map<String, String>> {
         private final String key;
