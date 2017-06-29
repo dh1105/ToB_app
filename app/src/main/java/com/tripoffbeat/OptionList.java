@@ -5,8 +5,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -37,7 +41,7 @@ import java.util.List;
 public class OptionList extends AppCompatActivity implements View.OnClickListener{
 
     Spinner states, min_budget, max_budget, activity, dist;
-    Button searchHotel, previous, clear;
+    Button searchHotel, clear;
     ArrayList<String> listItems=new ArrayList<>();
     ArrayList<String> listActivity = new ArrayList<>();
     ArrayAdapter<String> adapter1, adapter2;
@@ -56,8 +60,6 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
         setContentView(R.layout.activity_option_list);
         searchHotel = (Button) findViewById(R.id.searchHotel);
         searchHotel.setOnClickListener(this);
-        previous = (Button) findViewById(R.id.previous);
-        previous.setOnClickListener(this);
         clear = (Button) findViewById(R.id.clear);
         clear.setOnClickListener(this);
         i = getIntent();
@@ -271,6 +273,33 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actionbar2, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case R.id.action_logout:
+                Intent i = new Intent(getApplicationContext(), Popup.class);
+                /*i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                Toast.makeText(getApplicationContext(), "Logged out successfully", Toast.LENGTH_LONG).show();*/
+                startActivity(i);
+                return true;
+
+            case R.id.action_prev:
+                Intent in = new Intent(Intent.ACTION_VIEW, Uri.parse("http://139.59.34.30/quotation/"));
+                listActivity.clear();
+                listItems.clear();
+                startActivity(in);
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onClick(View view) {
 
         switch (view.getId()) {
@@ -318,13 +347,6 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
                    startActivity(in);
                    break;
                }
-
-            case R.id.previous:
-                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("http://139.59.34.30/quotation/"));
-                listActivity.clear();
-                listItems.clear();
-                startActivity(i);
-                break;
 
             case R.id.clear:
                 if(dist_delkm.isChecked() || time_del.isChecked()){

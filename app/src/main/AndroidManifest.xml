@@ -43,14 +43,21 @@
             android:launchMode="singleTop"/>
         <activity android:name=".Result"
             android:launchMode="singleTop"
-            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
-            android:parentActivityName="com.tripoffbeat.OptionList"/>
+            android:parentActivityName="com.tripoffbeat.OptionList">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
         <activity android:name=".ResortDetails"
             android:parentActivityName="com.tripoffbeat.Result"/>
 
         <uses-library
             android:name="com.google.android.maps"
             android:required="true" />
+
+        <!--<meta-data
+            android:name="android.app.default_searchable"
+            android:value=".Result" />-->
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -64,6 +71,10 @@
 
         <activity android:name=".web"
             android:parentActivityName="com.tripoffbeat.Result"/>
+
+        <activity android:name=".Popup"
+            android:theme="@style/AppTheme.cust"/>
+
     </application>
 
 </manifest>

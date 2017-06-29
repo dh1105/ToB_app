@@ -2,9 +2,12 @@ package com.tripoffbeat;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -39,9 +42,11 @@ public class web extends AppCompatActivity {
     String[] room_price_list;
     String url = "http://139.59.34.30/quotation/";
     String btn_ci, btn_co, n, a, k, r, m, price, distance, activity, state, d, act_f, rn;
+    String PageURL, PageTitle;
     String dist = "Delhi", ex = "1";
     Intent in;
     ProgressDialog pDialog;
+    ProgressDialog progressBar;
     View parentLayout;
     JSONparser jParser = new JSONparser();
     private static final String TAG_SUCCESS = "success";
@@ -54,6 +59,7 @@ public class web extends AppCompatActivity {
     List<String> activity_list = new ArrayList<>();
     JSONArray act = null;
     String act_name [];
+    ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +91,39 @@ public class web extends AppCompatActivity {
             webView.loadUrl(url);
             webView.setWebViewClient(new WebViewClient() {
 
+                @Override
+                public void onPageStarted(WebView view, String url, Bitmap favicon) {
+
+                    // TODO Auto-generated method stub
+                    super.onPageStarted(view, url, favicon);
+
+                    PageURL = view.getUrl();
+                    actionBar = getSupportActionBar();
+
+                    if (actionBar != null) {
+                        actionBar.setSubtitle(PageURL);
+                    }
+
+                }
+
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+                    // TODO Auto-generated method stub
+                    view.loadUrl(url);
+                    return true;
+                }
+
                 public void onPageFinished(WebView view, String url) {
                     super.onPageFinished(view, url);
+                    PageURL = view.getUrl();
+                    PageTitle = view.getTitle();
+                    actionBar = getSupportActionBar();
+                    if (actionBar != null) {
+                        actionBar.setTitle(PageTitle);
+                    }
+
+                    actionBar.setSubtitle(PageURL);
                     final String js = "javascript: " +
                             "var nameDoc = document.getElementsByName('name');" +
                             "nameDoc[0].value = '" + n + "';" +
@@ -154,6 +191,14 @@ public class web extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case R.id.action_logout:
+                Intent i = new Intent(getApplicationContext(), Popup.class);
+                /*i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                Toast.makeText(getApplicationContext(), "Logged out successfully", Toast.LENGTH_LONG).show();*/
+                startActivity(i);
+                return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 

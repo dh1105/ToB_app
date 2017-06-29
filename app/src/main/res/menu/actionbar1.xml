@@ -3,10 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/action_search"
+        app:actionViewClass="android.widget.SearchView"
+        android:icon="@android:drawable/ic_search_category_default"
+        android:title="Search"
+        android:visible="true"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/action_logout"
         android:title="Logout"
         android:visible="true"
         app:showAsAction="collapseActionView" />
-
 
 </menu>

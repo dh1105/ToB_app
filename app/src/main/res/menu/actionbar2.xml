@@ -3,6 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/action_prev"
+        android:title="Search previous quotes"
+        android:visible="true"
+        app:showAsAction="collapseActionView" />
+
+    <item
         android:id="@+id/action_logout"
         android:title="Logout"
         android:visible="true"
