@@ -415,8 +415,6 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
 
     private class ResortFilter extends Filter{
 
-        int position;
-
         public Filter getFilter() {
             if(resortFilter == null){
                 resortFilter = new ResortFilter();

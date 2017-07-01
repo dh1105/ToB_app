@@ -325,6 +325,23 @@ public class web extends AppCompatActivity {
             Log.d("LIST: ", "arr: " + Arrays.toString(mail_list));
             act_f = Arrays.toString(act_name);
             Log.d("ACt: ", act_f);
+            for(int i = 0; i < mail_list.length & i < room_list.length & i < room_price_list.length; i++){
+                if(mail_list[i].contains("'")){
+                    mail_list[i] = mail_list[i].replace("\'" , "\\'");
+                    Log.d("mail list: ", mail_list[i]);
+                }
+                if(room_list[i].contains("'")){
+                    room_list[i] = room_list[i].replace("\'", "\\'");
+                    Log.d("room list: ", room_list[i]);
+                }
+                if(room_price_list[i].contains("'")){
+                    room_price_list[i] = room_price_list[i].replace("\'", "\\'");
+                    Log.d("room price list: ", room_price_list[i]);
+                }
+            }
+            Log.d("List1: ","arr"+ Arrays.toString(mail_list));
+            Log.d("List2: ","arr"+ Arrays.toString(room_list));
+            Log.d("List3: ","arr"+ Arrays.toString(room_price_list));
         }
     }
 }
