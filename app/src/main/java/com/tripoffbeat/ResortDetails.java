@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -48,6 +49,7 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
     private static final String TAG_LAT = "latitude";
     private static final String TAG_LONG = "longitude";
     private static final String TAG_TIME = "time";
+    private static final String TAG_RATING = "rating";
     public static final String TAG = "ResortDetails";
     double latitude;
     double longitude;
@@ -59,6 +61,8 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
     ProgressDialog pDialog;
     TextView res_n, description, dist, time;
     View parentLayout;
+    RatingBar ratingBar;
+    String rating;
 
     // Creating JSON Parser object
     JSONparser jParser = new JSONparser();
@@ -72,6 +76,7 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
         description = (TextView) findViewById(R.id.description);
         dist = (TextView) findViewById(R.id.dist);
         time = (TextView) findViewById(R.id.time);
+        ratingBar = (RatingBar) findViewById(R.id.pop_ratingbar);
         new GetResortDetails().execute();
         i = getIntent();
         res_name = i.getStringExtra("resort_name");
@@ -166,10 +171,12 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
                     JSONArray b = json.getJSONArray(TAG_LAT);
                     JSONArray c = json.getJSONArray(TAG_LONG);
                     JSONArray d = json.getJSONArray(TAG_TIME);
+                    JSONArray e = json.getJSONArray(TAG_RATING);
                     des = a.getString(0);
                     latitude = b.getDouble(0);
                     longitude = c.getDouble(0);
                     t = d.getString(0);
+                    rating = e.getString(0);
                     Log.d("Lat: ", Double.toString(latitude));
                     Log.d("Lon: ", Double.toString(longitude));
                 }
@@ -215,6 +222,15 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
                     public void run() {
                         description.setText(des);
                         time.setText(t);
+                        Float rate;
+                        if(rating != null) {
+                            rate = Float.parseFloat(rating);
+                            ratingBar.setRating(rate);
+                        }
+                        else {
+                            ratingBar.setRating(0.0f);
+                            Toast.makeText(getApplicationContext(), "Rating not found", Toast.LENGTH_LONG).show();
+                        }
                         SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
                         if(mapFrag != null) {
                             mapFrag.getMapAsync(ResortDetails.this);
@@ -235,17 +251,22 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
     protected void loadMap(GoogleMap googleMap) {
         mMap = googleMap;
         if( mMap != null){
-            LatLng l = new LatLng(latitude, longitude);
-            MarkerOptions marker = new MarkerOptions().position(l).title(res_name);
-            CameraPosition cameraPosition = new CameraPosition.Builder().target(l).zoom(12).build();
-            Toast.makeText(this, "Map loading", Toast.LENGTH_SHORT).show();
-            mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-            mMap.addMarker(marker);
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            mMap.setTrafficEnabled(false);
-            mMap.setIndoorEnabled(false);
-            mMap.setBuildingsEnabled(false);
-            mMap.getUiSettings().setZoomControlsEnabled(true);
+            if(latitude == 0 && longitude == 0){
+                Toast.makeText(getApplicationContext(), "Location not found", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                LatLng l = new LatLng(latitude, longitude);
+                MarkerOptions marker = new MarkerOptions().position(l).title(res_name);
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(l).zoom(12).build();
+                Toast.makeText(this, "Map loading", Toast.LENGTH_SHORT).show();
+                mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                mMap.addMarker(marker);
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                mMap.setTrafficEnabled(false);
+                mMap.setIndoorEnabled(false);
+                mMap.setBuildingsEnabled(false);
+                mMap.getUiSettings().setZoomControlsEnabled(true);
+            }
         } else {
             Toast.makeText(this, "Error - Map was null", Toast.LENGTH_SHORT).show();
         }

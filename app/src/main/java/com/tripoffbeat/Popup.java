@@ -16,11 +16,13 @@ import android.widget.Toast;
 public class Popup extends Activity implements View.OnClickListener {
 
     Button yes, no;
+    Sessions sessions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_popup);
+        sessions = new Sessions(getApplicationContext());
         yes = (Button) findViewById(R.id.yes);
         yes.setOnClickListener(this);
 
@@ -40,10 +42,8 @@ public class Popup extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.yes:
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                sessions.logoutUser();
                 Toast.makeText(getApplicationContext(), "Logged out successfully", Toast.LENGTH_LONG).show();
-                startActivity(i);
                 break;
 
             case R.id.no:

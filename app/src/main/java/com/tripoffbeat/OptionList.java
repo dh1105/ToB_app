@@ -53,17 +53,24 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
     RadioButton dist_delkm;
     RadioButton time_del;
     List<String> t = null, km = null;
+    Sessions sessions;
+    Boolean bool;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_option_list);
+        sessions = new Sessions(getApplicationContext());
+        i = getIntent();
+        bool = sessions.getVal();
+        if(bool.equals(true)) {
+            sessions.checkLogin();
+        }
         searchHotel = (Button) findViewById(R.id.searchHotel);
         searchHotel.setOnClickListener(this);
         clear = (Button) findViewById(R.id.clear);
         clear.setOnClickListener(this);
         i = getIntent();
-
         r = (RadioGroup) findViewById(R.id.r);
         dist_delkm = (RadioButton) findViewById(R.id.dist_delkm);
         time_del = (RadioButton) findViewById(R.id.time_del);
@@ -74,7 +81,9 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
 
         states = (Spinner) findViewById(R.id.states);
         states.setVisibility(View.INVISIBLE);
-        adapter1 = new ArrayAdapter<String>(this, R.layout.spinner, R.id.states, listItems);
+        if(listItems.isEmpty()) {
+            adapter1 = new ArrayAdapter<String>(this, R.layout.spinner, R.id.states, listItems);
+        }
 
         states_box.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -141,7 +150,9 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
         });
         activity = (Spinner) findViewById(R.id.activity);
         activity.setVisibility(View.INVISIBLE);
-        adapter2 = new ArrayAdapter<String>(this, R.layout.spinner, R.id.activity, listActivity);
+        if(listActivity.isEmpty()) {
+            adapter2 = new ArrayAdapter<String>(this, R.layout.spinner, R.id.activity, listActivity);
+        }
         activity_box.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -437,10 +448,14 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
             return null;
         }
         protected void onPostExecute(Void result){
-            listItems.addAll(list);
-            adapter1.notifyDataSetChanged();
-            listActivity.addAll(list2);
-            adapter2.notifyDataSetChanged();
+            if(listItems.isEmpty()) {
+                listItems.addAll(list);
+                adapter1.notifyDataSetChanged();
+            }
+            if(listActivity.isEmpty()) {
+                listActivity.addAll(list2);
+                adapter2.notifyDataSetChanged();
+            }
         }
     }
 }

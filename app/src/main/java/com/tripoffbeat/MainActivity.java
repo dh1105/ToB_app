@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -34,16 +35,21 @@ public class MainActivity extends AppCompatActivity {
     private EditText etPassword;
     String email, password;
     View parentLayout;
+    Sessions sessions;
+    CheckBox login_perm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         parentLayout = findViewById(android.R.id.content);
-
+        sessions = new Sessions(getApplicationContext());
+        sessions.login();
         // Get Reference to variables
         etEmail = (EditText) findViewById(R.id.email);
         etPassword = (EditText) findViewById(R.id.password);
+        login_perm = (CheckBox) findViewById(R.id.login_perm);
+
         Log.i(TAG, "onCreate()");
     }
 
@@ -202,6 +208,13 @@ public class MainActivity extends AppCompatActivity {
                  */
                 Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, OptionList.class);
+                if(login_perm.isChecked()){
+                    String e = etEmail.getText().toString();
+                    String p = etPassword.getText().toString();
+                    Log.d("Email", e);
+                    Log.d("Pass", p);
+                    sessions.createLoginSession(e, p, true);
+                }
                 startActivity(intent);
                 MainActivity.this.finish();
 
