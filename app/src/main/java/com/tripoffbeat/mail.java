@@ -21,6 +21,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Class used to fill in all the details of the client by the user
+ */
+
 public class mail extends AppCompatActivity implements View.OnClickListener {
 
     Button email;
@@ -39,7 +43,9 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Sets the layout of the screen based on the XML file activity_mail
         setContentView(R.layout.activity_mail);
+        //Textboxes to fill
         mail = (EditText) findViewById(R.id.client_email);
         btn_checkin = (EditText) findViewById(R.id.btn_checkin);
         btn_checkout = (EditText) findViewById(R.id.btn_checkout);
@@ -49,9 +55,11 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
         rooms = (EditText) findViewById(R.id.rooms);
         days = (EditText) findViewById(R.id.days);
 
+        //Textbox for check in and check out are clickable
         btn_checkin.setOnClickListener(this);
         btn_checkout.setOnClickListener(this);
 
+        //one clickong either a calender will pop up to select the date
         date = new DatePickerDialog.OnDateSetListener() {
 
             @Override
@@ -81,6 +89,7 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
         };
         email = (Button)findViewById(R.id.mail_button);
         email.setOnClickListener(this);
+        //Used to get values of resort, room_type, room_price from the previous activity
         Bundle b = this.getIntent().getExtras();
         mail_lists = b.getStringArray("mail_list");
         room_list = b.getStringArray("room_list");
@@ -95,6 +104,7 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.mail_button:
+                //Clicking next passes all values to the web activity
                 btn_ci = btn_checkin.getText().toString();
                 btn_co = btn_checkout.getText().toString();
                 n = name.getText().toString();
@@ -142,6 +152,7 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //Uses an action bar as defined in the menu folder of res
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actionbar, menu);
         return super.onCreateOptionsMenu(menu);
@@ -151,6 +162,7 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case R.id.action_logout:
+                //Opens a pop up window for a logout prompt
                 Intent i = new Intent(getApplicationContext(), Popup.class);
                 /*i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 Toast.makeText(getApplicationContext(), "Logged out successfully", Toast.LENGTH_LONG).show();*/
@@ -179,6 +191,7 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
 
     private void getDiffDays(){
 
+        //Calculates number of days and sets the value in the days field
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
         try {
             Date date1 = simpleDateFormat.parse(btn_checkin.getText().toString());

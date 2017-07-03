@@ -4,6 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- Lays out the format for the spinners in OptionList -->
+
     <TextView
         android:id="@+id/states"
         android:layout_width="wrap_content"

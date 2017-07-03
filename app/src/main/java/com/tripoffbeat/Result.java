@@ -54,7 +54,6 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
     // Creating JSON Parser object
     JSONparser jParser = new JSONparser();
 
-
     // url to get all products list
     private static String url_all_resorts = "http://139.59.34.30/get_lulz.php";
 
@@ -67,8 +66,9 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
     private static final String TAG_CITIES = "cities";
     private static final String TAG_DIST = "dist_del";
     private static final String TAG_ROOM_NAME = "room_name";
+    private static final String TAG_RATING = "rating";
     public static final String TAG = "Result";
-    String name, price, s, c, dd, dist_delkm, time_del, rn;
+    String name, price, s, c, dd, dist_delkm, time_del, rn, rating;
     SimpleAdapter adapter;
 
     // products JSONArray
@@ -78,16 +78,21 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
     JSONArray cities = null;
     JSONArray dist_del = null;
     JSONArray room_name = null;
+    JSONArray tob_rate = null;
 
-    RadioButton sort_price;
+    //RadioButtons for sorting
+    RadioButton sort_price, sort_rating;
     RadioButton sort_alpha, sort_cities, sort_dist, sort_state;
     RadioGroup rad;
 
+    //Used to store result from DB
     ArrayList<HashMap<String, String>> resortsList;
+    //Used to store result after searching
     ArrayList<HashMap<String, String>> filter_resort_list;
     List<String> stringList = new ArrayList<>();
     List<String> priceList= new ArrayList<>();
     List<String> roomTypeList = new ArrayList<>();
+    //SimpleAdapter used to set up ListView
     private SelectionAdapter mAdapter;
     View parentLayout;
     ListView lv;
@@ -113,8 +118,10 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
         sort_cities = (RadioButton) findViewById(R.id.sort_city);
         sort_state = (RadioButton) findViewById(R.id.sort_states);
         sort_dist = (RadioButton) findViewById(R.id.sort_dist);
+        sort_rating = (RadioButton) findViewById(R.id.sort_rating);
 
         in = getIntent();
+        //Getting values of filters from previous values
         states = in.getStringExtra("states");
         min_budget = in.getStringExtra("min_budget");
         max_budget = in.getStringExtra("max_budget");
@@ -134,23 +141,35 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // getting values from selected ListItem
+                String p, r_t, na, ct;
                 res_name = ((TextView) view.findViewById(R.id.name)).getText().toString();
                 d = ((TextView) view.findViewById(R.id.distance_from_delhi)).getText().toString();
+                p = ((TextView) view.findViewById(R.id.price)).getText().toString();
+                r_t = ((TextView) view.findViewById(R.id.room_type)).getText().toString();
+                na = ((TextView) view.findViewById(R.id.cities)).getText().toString();
+                ct = ((TextView) view.findViewById(R.id.states)).getText().toString();
                 //Bundle data = saveData();
                 Intent in = new Intent(Result.this, ResortDetails.class);
+                //Starting ResortDetails.class and sending values to it
                 in.putExtra(TAG_NAME, res_name);
                 in.putExtra(TAG_DIST, d);
+                in.putExtra(TAG_ROOM_NAME, r_t);
+                in.putExtra(TAG_PRICE, p);
+                in.putExtra(TAG_CITIES, na);
+                in.putExtra(TAG_STATE, ct);
                 //in.putExtras(data);
                 //startActivityForResult(in, 1);
                 startActivity(in);
             }
         });
-        mAdapter = new SelectionAdapter(this, R.layout.activity_result, R.id.name, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME});
+        //Setting adapter for the Contextual action bar which pops on long click
+        mAdapter = new SelectionAdapter(this, R.layout.activity_result, R.id.name, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING});
         lv.setAdapter(mAdapter);
         lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         lv.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
 
             private int nr = 0;
+            //Create action bar on longclick
             @Override
             public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
                 nr = 0;
@@ -164,6 +183,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                 return false;
             }
 
+            //clicking mail will take you to next activity
             @Override
             public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
@@ -179,6 +199,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                             Log.d("LIST2: ", room_list[i]);
                             Log.d("LIST3: ", room_price_list[i]);
                         }
+                        //passing values of resort_name, room_type, room_price for a resort in a String array
                         Bundle b = new Bundle();
                         b.putStringArray("mail_list", mail_list);
                         b.putStringArray("room_list", room_list);
@@ -199,6 +220,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                 return false;
             }
 
+            //clearing all arrays and clearing selection
             @Override
             public void onDestroyActionMode(android.view.ActionMode mode) {
                 mAdapter.clearSelection();
@@ -210,11 +232,13 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
             @Override
             public void onItemCheckedStateChanged(android.view.ActionMode mode, int position, long id, boolean checked) {
                 if (checked) {
+                    //On selecting the resort we add it to an ArrayList
                     nr++;
                     mAdapter.setNewSelection(position, checked);
                     String get_list;
                     String get_price;
                     String room_type;
+                    //if filter list is not null we add the details from that
                     if(filter_resort_list != null){
                         get_list = filter_resort_list.get(position).get(TAG_NAME);
                         get_price = filter_resort_list.get(position).get(TAG_PRICE);
@@ -233,6 +257,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                 } else {
                     nr--;
                     mAdapter.removeSelection(position);
+                    //Remove resort_name, room_price, room_type from the lists
                     int i;
                     if(filter_resort_list != null){
                         for(i = 0 ; i < stringList.size(); i++){
@@ -261,9 +286,11 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                         }
                     }
                 }
+                //Set title as number of resorts selected
                 mode.setTitle("Resorts selected: " + nr);
             }
         });
+        //Enables the contextual action bar on long click
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -272,6 +299,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
             }
         });
         Log.i(TAG, "onCreate()");
+        //Checks for a radio button change and sorts accordingly. The names of the RadioButton make it self explanatory
         rad.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
@@ -279,7 +307,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                     case R.id.sort_alpha:
                         if(filter_resort_list != null){
                             Collections.sort(filter_resort_list, new MapComparator(TAG_NAME));
-                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type, R.id.tob_rating});
                             // updating listview
                             lv.setAdapter(adapter);
                             break;
@@ -287,7 +315,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                         else {
                             Collections.sort(resortsList, new MapComparator(TAG_NAME));
                             Log.d("List alpha: ", resortsList.toString());
-                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
+                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type, R.id.tob_rating});
                             // updating listview
                             lv.setAdapter(adapter);
                             break;
@@ -296,14 +324,14 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                     case R.id.sort_price:
                         if(filter_resort_list != null){
                             Collections.sort(filter_resort_list, new MapComparator(TAG_PRICE));
-                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type, R.id.tob_rating});
                             // updating listview
                             lv.setAdapter(adapter);
                         }
                         else {
                             Collections.sort(resortsList, new MapComparator(TAG_PRICE));
                             Log.d("List price: ", resortsList.toString());
-                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
+                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type, R.id.tob_rating});
                             // updating listview
                             lv.setAdapter(adapter);
                             break;
@@ -312,7 +340,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                     case R.id.sort_states:
                         if(filter_resort_list != null){
                             Collections.sort(filter_resort_list, new MapComparator(TAG_STATE));
-                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type, R.id.tob_rating});
                             // updating listview
                             lv.setAdapter(adapter);
                             break;
@@ -320,7 +348,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                         else {
                             Collections.sort(resortsList, new MapComparator(TAG_STATE));
                             Log.d("List state: ", resortsList.toString());
-                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
+                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type, R.id.tob_rating});
                             // updating listview
                             lv.setAdapter(adapter);
                             break;
@@ -329,7 +357,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                     case R.id.sort_city:
                         if(filter_resort_list != null){
                             Collections.sort(filter_resort_list, new MapComparator(TAG_CITIES));
-                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type, R.id.tob_rating});
                             // updating listview
                             lv.setAdapter(adapter);
                             break;
@@ -337,7 +365,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                         else {
                             Collections.sort(resortsList, new MapComparator(TAG_CITIES));
                             Log.d("List alpha: ", resortsList.toString());
-                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
+                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type, R.id.tob_rating});
                             // updating listview
                             lv.setAdapter(adapter);
                             break;
@@ -346,7 +374,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                     case R.id.sort_dist:
                         if(filter_resort_list != null){
                             Collections.sort(filter_resort_list, new MapComparator(TAG_DIST));
-                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type, R.id.tob_rating});
                             // updating listview
                             lv.setAdapter(adapter);
                             break;
@@ -354,7 +382,24 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                         else {
                             Collections.sort(resortsList, new MapComparator(TAG_DIST));
                             Log.d("List alpha: ", resortsList.toString());
-                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type});
+                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type, R.id.tob_rating});
+                            // updating listview
+                            lv.setAdapter(adapter);
+                            break;
+                        }
+
+                    case R.id.sort_rating:
+                        if(filter_resort_list != null){
+                            Collections.sort(filter_resort_list, new MapComparator(TAG_RATING));
+                            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type, R.id.tob_rating});
+                            // updating listview
+                            lv.setAdapter(adapter);
+                            break;
+                        }
+                        else {
+                            Collections.sort(resortsList, new MapComparator(TAG_RATING));
+                            Log.d("List alpha: ", resortsList.toString());
+                            adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[]{TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[]{R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi, R.id.room_type, R.id.tob_rating});
                             // updating listview
                             lv.setAdapter(adapter);
                             break;
@@ -373,6 +418,10 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
             }
         }
     }*/
+
+    /**
+     * Defines the layout for the Action bar and inserts a search widget
+     */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -399,6 +448,10 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     *Methods used by the search widget
+     */
+
     @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
@@ -406,9 +459,8 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        //adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+        //Object of ResortFilter and calls the getFilter method to filter results
         resortFilter.getFilter().filter(newText);
-        //mAdapter.notifyDataSetChanged();
         return true;
     }
 
@@ -425,6 +477,8 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults filterResults = new FilterResults();
+            /*Searches the resort name, state, city, room_type, distance, price fields and if the type text is present in any of the
+            * forementioned fields it adds it to a temporary list*/
             if(constraint != null && constraint.length()>0){
                 ArrayList<HashMap<String, String>> tempList = new ArrayList<>();
                 for(HashMap<String, String> u : resortsList){
@@ -448,12 +502,14 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                         Log.d("Dist: ", u.get(TAG_DIST));
                         m.put(TAG_ROOM_NAME, u.get(TAG_ROOM_NAME));
                         Log.d("Room type: ", u.get(TAG_ROOM_NAME));
+                        m.put(TAG_RATING, u.get(TAG_RATING));
                         Log.d("Map: ", m.toString());
 
                         tempList.add(m);
                         Log.d("TempList1: ", tempList.toString());
                     }
                 }
+                //If the result isn't empty it resets the list size and values
                 filterResults.count = tempList.size();
                 filterResults.values = tempList;
                 Log.d("TempList: ", tempList.toString());
@@ -462,13 +518,16 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                 filterResults.count = resortsList.size();
                 filterResults.values = resortsList;
             }
+            //return results to publishResults
             return filterResults;
         }
 
         @SuppressWarnings("unchecked")
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
+            //send all values returned from the previous function and set them in the filter_resort_list
             filter_resort_list = (ArrayList<HashMap<String, String >>) results.values;
+            //Sorts according to the button checked
             if (sort_price.isChecked()) {
                 Collections.sort(filter_resort_list, new MapComparator(TAG_PRICE));
             }
@@ -484,11 +543,18 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
             else if(sort_cities.isChecked()){
                 Collections.sort(filter_resort_list, new MapComparator(TAG_CITIES));
             }
-            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+            else if(sort_rating.isChecked()){
+                Collections.sort(filter_resort_list, new MapComparator(TAG_RATING));
+            }
+            adapter = new SimpleAdapter(Result.this, filter_resort_list, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type, R.id.tob_rating});
             // updating listview
             lv.setAdapter(adapter);
         }
     }
+
+    /**
+     * Class used to sort by comparing one value with another
+     */
 
     private class MapComparator implements Comparator<Map<String, String>> {
         private final String key;
@@ -505,6 +571,10 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
             return firstValue.compareTo(secondValue);
         }
     }
+
+    /**
+     * Class used to initialze the contextual action bar
+     */
 
     private class SelectionAdapter extends ArrayAdapter<String> {
 
@@ -609,6 +679,10 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
         Log.i(TAG, "onDestroy()");
     }
 
+    /**
+     *Class used to get details of resorts and store it in a ArrayList<HashMap<String, String>>
+     */
+
     private class LoadAllResorts extends AsyncTask<String, String, String> {
 
         @Override
@@ -625,6 +699,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
 
             // Check your log cat for JSON response
             JSONObject json = null;
+            //Based on the parameters passed it will select the method and pass certain parameters set in the previous activity
             try {
                 if(states.equals("Empty") && min_budget.equals("Empty") && max_budget.equals("Empty") && dist_delkm.equals("Empty") && time_del.equals("Empty")){
                     json = jParser.makeHttpRequest3(url_all_resorts, activity);
@@ -709,11 +784,12 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                     cities = json.getJSONArray(TAG_CITIES);
                     dist_del = json.getJSONArray(TAG_DIST);
                     room_name = json.getJSONArray(TAG_ROOM_NAME);
+                    tob_rate = json.getJSONArray(TAG_RATING);
 
                     int i;
 
                     // looping through All resorts
-                    for (i = 0; i < resorts.length() & i < rates.length() & i < sname.length() & i < cities.length() & i < dist_del.length() & i < room_name.length(); i++) {
+                    for (i = 0; i < resorts.length() & i < rates.length() & i < sname.length() & i < cities.length() & i < dist_del.length() & i < room_name.length() & i < tob_rate.length(); i++) {
 
                         // Storing each json item in variable
                         name = resorts.getString(i);
@@ -722,6 +798,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                         c = cities.getString(i);
                         dd = dist_del.getString(i);
                         rn = room_name.getString(i);
+                        rating = tob_rate.getString(i);
 
                         // creating new HashMap
                         HashMap<String, String> map = new HashMap<String, String>();
@@ -733,6 +810,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                         map.put(TAG_CITIES, c);
                         map.put(TAG_DIST, dd);
                         map.put(TAG_ROOM_NAME, rn);
+                        map.put(TAG_RATING, rating);
 
                         // adding HashList to ArrayList
                         resortsList.add(map);
@@ -762,6 +840,8 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                 }
             } catch (JSONException e) {
                 pDialog.dismiss();
+                //Problem parsing the JSON String as all values have not been received
+                //Occurs when the DB does not have a value you are asking for
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -769,6 +849,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                                 .setAction("RETRY", new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
+                                        //Retry action if the problem persists check the DB
                                         new LoadAllResorts().execute();
                                     }
                                 })
@@ -779,6 +860,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                 });
             } catch(NullPointerException e){
                 pDialog.dismiss();
+                //Internet problem warning
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -786,6 +868,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                                 .setAction("RETRY", new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
+                                        //Will retry to get values once internet is checked
                                         new LoadAllResorts().execute();
                                     }
                                 })
@@ -811,7 +894,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                     /**
                      * Updating parsed JSON data into ListView
                      * */
-                    adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type});
+                    adapter = new SimpleAdapter(Result.this, resortsList, R.layout.activity_result, new String[] {TAG_NAME, TAG_PRICE, TAG_STATE, TAG_CITIES, TAG_DIST, TAG_ROOM_NAME, TAG_RATING}, new int[] { R.id.name, R.id.price, R.id.states, R.id.cities, R.id.distance_from_delhi,R.id.room_type, R.id.tob_rating});
                     // updating listview
                     lv.setAdapter(adapter);
                 }

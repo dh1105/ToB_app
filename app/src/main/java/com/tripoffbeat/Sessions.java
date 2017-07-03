@@ -25,7 +25,7 @@ public class Sessions {
     int PRIVATE_MODE = 0;
 
     // Sharedpref file name
-    private static final String PREF_NAME = "AndroidHivePref";
+    private static final String PREF_NAME = "ToB";
 
     // All Shared Preferences Keys
     private static final String IS_LOGIN = "IsLoggedIn";
@@ -83,6 +83,11 @@ public class Sessions {
         }
     }
 
+    /**
+     * Check login method wil check user login status
+     * if it is true it will direct you to the OptionList.class
+     * */
+
     public void login(){
         if(this.isLoggedIn()){
             Intent i = new Intent(_context, OptionList.class);
@@ -91,21 +96,7 @@ public class Sessions {
         }
     }
 
-    /**
-     * Get stored session data
-     * */
-    public HashMap<String, String> getUserDetails(){
-        HashMap<String, String> user = new HashMap<String, String>();
-        // user name
-        user.put(KEY_NAME, pref.getString(KEY_NAME, null));
-
-        // user email id
-        user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
-
-        // return user
-        return user;
-    }
-
+    //Returns true if you are logged in
     public boolean getVal(){
         return pref.getBoolean(IS_LOGIN, isLoggedIn());
     }

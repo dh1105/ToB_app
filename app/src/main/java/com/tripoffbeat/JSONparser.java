@@ -21,6 +21,9 @@ import java.net.URL;
 
 /**
  * Created by user on 5/24/2017.
+ * Class used to make a connection to the DB and get data in the form of a JSON string and parse it in order to set values
+ * in the respective fields. The Result, ResortDetails and web classes use this class for DB communication. Different methods
+ * present to accomodate all cases of parameters passed through the filters from OptionList.class to Result.class
  */
 
 public class JSONparser {

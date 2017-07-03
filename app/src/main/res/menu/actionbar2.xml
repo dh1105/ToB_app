@@ -2,6 +2,8 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <!-- action bar layout for OptionList -->
+
     <item
         android:id="@+id/action_prev"
         android:title="Search previous quotes"
@@ -9,10 +11,16 @@
         app:showAsAction="collapseActionView" />
 
     <item
+        android:id="@+id/action_clear"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:title="Clear all"
+        android:visible="true"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_logout"
         android:title="Logout"
         android:visible="true"
         app:showAsAction="collapseActionView" />
-
 
 </menu>

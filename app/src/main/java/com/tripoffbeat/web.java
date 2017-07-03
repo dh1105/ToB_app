@@ -33,6 +33,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Used to autofill form
+ */
+
 public class web extends AppCompatActivity {
 
     WebView webView;
@@ -41,19 +45,22 @@ public class web extends AppCompatActivity {
     String[] room_list;
     String[] room_price_list;
     String url = "http://139.59.34.30/quotation/";
-    String btn_ci, btn_co, n, a, k, r, m, price, distance, activity, state, d, act_f, rn;
+    String btn_ci, btn_co, n, a, k, r, m, distance, activity, state, d, act_f, rn;
     String PageURL, PageTitle;
+    //arbitrary value for the excersion field
     String dist = "Delhi", ex = "1";
     Intent in;
     ProgressDialog pDialog;
     ProgressDialog progressBar;
     View parentLayout;
     JSONparser jParser = new JSONparser();
+    //Values being fetched from the DB
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_PRICE = "price";
     private static final String TAG_DIST = "dist_del";
     private static final String TAG_ACT = "activity_name";
     private static final String TAG_STATE = "name";
+    //URLs of php files used
     private static String get_details = "http://139.59.34.30/get_form.php";
     private static String get_activity_array = "http://139.59.34.30/get_activity_array.php";
     List<String> activity_list = new ArrayList<>();
@@ -72,6 +79,7 @@ public class web extends AppCompatActivity {
         Log.d("activity ", act_i);
         if(act_i.equals("mail")) {
             Bundle b = this.getIntent().getExtras();
+            //All values received from the previous activities
             mail_list = b.getStringArray("mail_list");
             room_list = b.getStringArray("room_list");
             room_price_list = b.getStringArray("room_price_list");
@@ -85,6 +93,7 @@ public class web extends AppCompatActivity {
             d = in.getStringExtra("days");
             rn = in.getStringExtra("room_type");
             new GetDetails().execute();
+            //JS used to fill the form in a webview
             webView.getSettings().setJavaScriptEnabled(true);
             webView.getSettings().setDomStorageEnabled(true);
             webView.getSettings().setDisplayZoomControls(true);
@@ -124,6 +133,7 @@ public class web extends AppCompatActivity {
                     }
 
                     actionBar.setSubtitle(PageURL);
+                    //js is used to carry out JavaScript actions and filling details in the respective fields with strings
                     final String js = "javascript: " +
                             "var nameDoc = document.getElementsByName('name');" +
                             "nameDoc[0].value = '" + n + "';" +
@@ -242,6 +252,11 @@ public class web extends AppCompatActivity {
 
     private class GetDetails extends AsyncTask<String, String, String> {
 
+        /**
+         * Class used to get details required
+         * similar to all previous activities
+         */
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -324,7 +339,13 @@ public class web extends AppCompatActivity {
             }
             Log.d("LIST: ", "arr: " + Arrays.toString(mail_list));
             act_f = Arrays.toString(act_name);
+            if(act_f.contains("[") || act_f.contains("]")){
+                act_f = act_f.replace("[", " ");
+                act_f = act_f.replace("]", " ");
+            }
             Log.d("ACt: ", act_f);
+            /*This for loop is extremely important, it replaces all singe quotes ( ' ) with (\') to make it possible for the JS
+            * command to parse it correctly*/
             for(int i = 0; i < mail_list.length & i < room_list.length & i < room_price_list.length; i++){
                 if(mail_list[i].contains("'")){
                     mail_list[i] = mail_list[i].replace("\'" , "\\'");
@@ -336,6 +357,18 @@ public class web extends AppCompatActivity {
                 }
                 if(room_price_list[i].contains("'")){
                     room_price_list[i] = room_price_list[i].replace("\'", "\\'");
+                    Log.d("room price list: ", room_price_list[i]);
+                }
+                if(mail_list[i].contains("?'")){
+                    mail_list[i] = mail_list[i].replace("?" , " ");
+                    Log.d("mail list: ", mail_list[i]);
+                }
+                if(room_list[i].contains("?")){
+                    room_list[i] = room_list[i].replace("?", " ");
+                    Log.d("room list: ", room_list[i]);
+                }
+                if(room_price_list[i].contains("?")){
+                    room_price_list[i] = room_price_list[i].replace("", " ");
                     Log.d("room price list: ", room_price_list[i]);
                 }
             }

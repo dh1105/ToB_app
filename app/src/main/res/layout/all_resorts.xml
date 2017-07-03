@@ -53,7 +53,7 @@
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:paddingTop="7dp"
-            android:text="Sort by:"
+            android:text="Sort:"
             android:textColor="@android:color/background_dark"
             android:textSize="16sp" />
 
@@ -90,7 +90,7 @@
                         android:layout_weight="1"
                         android:checked="false"
                         android:duplicateParentState="false"
-                        android:text="Alphabetically"
+                        android:text="Name"
                         android:textAlignment="center"
                         android:textColor="@android:color/background_dark" />
 
@@ -118,6 +118,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Distance" />
+
+                    <RadioButton
+                        android:id="@+id/sort_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Rating" />
 
                 </RadioGroup>
             </LinearLayout>

@@ -41,8 +41,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //layout of this activity defined by activity_main
         setContentView(R.layout.activity_main);
         parentLayout = findViewById(android.R.id.content);
+        //Using an object of Sessions class to test if user is logged in
+        //If user has clicked the box on previous login it will automatically log the user in
         sessions = new Sessions(getApplicationContext());
         sessions.login();
         // Get Reference to variables
@@ -102,6 +105,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * class used to send data to the DB to confirm login credentials. If the value returned is true it logs in
+     * If value received is false the credentials don't match and the login does not happen
+     * If value received is exception it is because of your internet connection
+     */
     private class AsyncLogin extends AsyncTask<String, String, String>
     {
         ProgressDialog pdLoading = new ProgressDialog(MainActivity.this);
@@ -209,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, OptionList.class);
                 if(login_perm.isChecked()){
+                    //If the checkbox is ticked it will keep you logged in till you log out
                     String e = etEmail.getText().toString();
                     String p = etPassword.getText().toString();
                     Log.d("Email", e);

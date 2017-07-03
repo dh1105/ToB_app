@@ -2,6 +2,7 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <!-- action bar layout for Result -->
     <item
         android:id="@+id/action_search"
         app:actionViewClass="android.widget.SearchView"

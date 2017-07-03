@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 /**
  * Created by user on 6/28/2017.
+ * pop up window for logout prompt
  */
 
 public class Popup extends Activity implements View.OnClickListener {
@@ -43,6 +44,7 @@ public class Popup extends Activity implements View.OnClickListener {
         switch (v.getId()){
             case R.id.yes:
                 sessions.logoutUser();
+                //if you press yes it will log you out and clear all sessions data
                 Toast.makeText(getApplicationContext(), "Logged out successfully", Toast.LENGTH_LONG).show();
                 break;
 
