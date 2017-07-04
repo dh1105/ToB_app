@@ -47,7 +47,6 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
     private static final String TAG_LAT = "latitude";
     private static final String TAG_LONG = "longitude";
     private static final String TAG_TIME = "time";
-    private static final String TAG_RATING = "rating";
     public static final String TAG = "ResortDetails";
     private static final String TAG_ACT = "activity_name";
     double latitude;
@@ -55,14 +54,12 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
     JSONArray act = null;
     private GoogleMap mMap;
     Intent i;
-    String res_name, d, activity, p, r_n, ct, st;
+    String res_name, d, activity, p, r_n, ct, st, tob_rating;
     TextView act_text;
     // Progress Dialog
     ProgressDialog pDialog;
-    TextView res_n, description, dist, time, price, room_type, state_name, city_name;
+    TextView res_n, description, dist, time, price, room_type, state_name, city_name, rating;
     View parentLayout;
-    RatingBar ratingBar;
-    String rating;
 
     // Creating JSON Parser object
     JSONparser jParser = new JSONparser();
@@ -83,7 +80,7 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
         act_text = (TextView) findViewById(R.id.act_text);
         state_name = (TextView) findViewById(R.id.state_name);
         city_name = (TextView) findViewById(R.id.city_name);
-        ratingBar = (RatingBar) findViewById(R.id.pop_ratingbar);
+        rating = (TextView) findViewById(R.id.tob_rate);
         //Executing the task of getting description, lat, long, activities, time from DB
         new GetResortDetails().execute();
         i = getIntent();
@@ -94,6 +91,7 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
         r_n = i.getStringExtra("room_name");
         ct = i.getStringExtra("name");
         st = i.getStringExtra("cities");
+        tob_rating = i.getStringExtra("rating");
         //Setting all values recieved from previous activity onto textviews
         dist.setText(d);
         res_n.setText(res_name);
@@ -101,6 +99,7 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
         room_type.setText(r_n);
         state_name.setText(ct);
         city_name.setText(st);
+        rating.setText(tob_rating);
     }
 
     @Override
@@ -195,13 +194,11 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
                     JSONArray b = json.getJSONArray(TAG_LAT);
                     JSONArray c = json.getJSONArray(TAG_LONG);
                     JSONArray d = json.getJSONArray(TAG_TIME);
-                    JSONArray e = json.getJSONArray(TAG_RATING);
                     //Putting values into the variables
                     des = a.getString(0);
                     latitude = b.getDouble(0);
                     longitude = c.getDouble(0);
                     t = d.getString(0);
-                    rating = e.getString(0);
                     Log.d("Lat: ", Double.toString(latitude));
                     Log.d("Lon: ", Double.toString(longitude));
                 }
@@ -291,15 +288,6 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
                         }
                         else{
                             act_text.setText(act_f);
-                        }
-                        //Rating bar is set
-                        if(rating != null) {
-                            rate = Float.parseFloat(rating);
-                            ratingBar.setRating(rate);
-                        }
-                        else {
-                            ratingBar.setRating(0.0f);
-                            Toast.makeText(getApplicationContext(), "Rating not found", Toast.LENGTH_LONG).show();
                         }
                         //Map is loaded
                         //getMapAsync calls onMapReady

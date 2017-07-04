@@ -259,22 +259,37 @@
                     android:layout_gravity="center_vertical|center_horizontal"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
+                    android:layout_marginTop="3dp"
                     android:layout_weight="1"
                     android:text="ToB rating:"
                     android:textColor="@android:color/background_dark"
                     android:textSize="14sp" />
 
-                <RatingBar
-                    android:id="@+id/pop_ratingbar"
-                    style="?android:attr/ratingBarStyleSmall"
+                <TextView
+                    android:id="@+id/tob_rate"
                     android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:isIndicator="true"
-                    android:numStars="5"
-                    android:rating="5"
-                    android:stepSize="1" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|center_horizontal|center"
+                    android:paddingTop="5dp"
+                    android:textAlignment="viewEnd"
+                    android:textColor="@android:color/background_dark"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/textView16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|center_horizontal|center"
+                    android:paddingTop="5dp"
+                    android:text="/5"
+                    android:textAlignment="viewStart"
+                    android:textColor="@android:color/background_dark"
+                    android:textSize="14sp" />
 
             </LinearLayout>
 

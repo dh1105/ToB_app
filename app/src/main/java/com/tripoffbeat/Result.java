@@ -141,13 +141,14 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // getting values from selected ListItem
-                String p, r_t, na, ct;
+                String p, r_t, na, ct, rating;
                 res_name = ((TextView) view.findViewById(R.id.name)).getText().toString();
                 d = ((TextView) view.findViewById(R.id.distance_from_delhi)).getText().toString();
                 p = ((TextView) view.findViewById(R.id.price)).getText().toString();
                 r_t = ((TextView) view.findViewById(R.id.room_type)).getText().toString();
                 na = ((TextView) view.findViewById(R.id.cities)).getText().toString();
                 ct = ((TextView) view.findViewById(R.id.states)).getText().toString();
+                rating = ((TextView) view.findViewById(R.id.tob_rating)).getText().toString();
                 //Bundle data = saveData();
                 Intent in = new Intent(Result.this, ResortDetails.class);
                 //Starting ResortDetails.class and sending values to it
@@ -157,6 +158,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
                 in.putExtra(TAG_PRICE, p);
                 in.putExtra(TAG_CITIES, na);
                 in.putExtra(TAG_STATE, ct);
+                in.putExtra(TAG_RATING, rating);
                 //in.putExtras(data);
                 //startActivityForResult(in, 1);
                 startActivity(in);

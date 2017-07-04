@@ -1,10 +1,19 @@
 package com.tripoffbeat;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Path;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.IdRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -35,9 +44,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +63,9 @@ import java.util.List;
 public class OptionList extends AppCompatActivity implements View.OnClickListener{
 
     Spinner states, min_budget, max_budget, activity, dist;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public static final int CONNECTION_TIMEOUT = 10000;
+    public static final int READ_TIMEOUT = 15000;
     Button searchHotel;
     ArrayList<String> listItems=new ArrayList<>();
     ArrayList<String> listActivity = new ArrayList<>();
@@ -64,6 +82,8 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
     Boolean bool;
     TextView max_txt, min_txt;
     View parentLayout;
+    Double lat, lng;
+    GPSTracker mygps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +102,28 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
         if(bool.equals(true)) {
             sessions.checkLogin();
         }
+        try {
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(OptionList.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
+            } else {
+                // Write you code here if permission already given.
+                mygps = new GPSTracker(OptionList.this);
+                if(mygps.canGetLocation()){
+
+                    lat = mygps.getLatitude();
+                    lng = mygps.getLongitude();
+                }else{
+                    // can't get location
+                    // GPS or Network is not enabled
+                    // Ask user to enable GPS/network in settings
+                    mygps.showSettingsAlert();
+                }
+            }
+        }
+        catch(Exception j){
+            j.printStackTrace();
+        }
+        new SendLoc1().execute();
         //reference to all variables
         min_txt = (TextView) findViewById(R.id.min_txt);
         max_txt = (TextView) findViewById(R.id.max_txt);
@@ -462,6 +504,118 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
 
             default:
                 break;
+        }
+    }
+
+    private class SendLoc1 extends AsyncTask<String, String, String>{
+
+        HttpURLConnection conn1;
+        URL url1;
+
+        @Override
+        protected String doInBackground(String... params) {
+            try{
+                url1 = new URL("http://139.59.34.30/send_loc.php");
+            } catch (MalformedURLException e){
+                e.printStackTrace();
+            }
+            try {
+                // Setup HttpURLConnection class to send and receive data from php and mysql
+                conn1 = (HttpURLConnection)url1.openConnection();
+                conn1.setReadTimeout(READ_TIMEOUT);
+                conn1.setConnectTimeout(CONNECTION_TIMEOUT);
+                conn1.setRequestMethod("POST");
+
+                // setDoInput and setDoOutput method depict handling of both send and receive
+                conn1.setDoInput(true);
+                conn1.setDoOutput(true);
+
+                String l1 = Double.toString(lat);
+                String l2 = Double.toString(lng);
+                // Append parameters to URL
+                Uri.Builder builder = new Uri.Builder().appendQueryParameter("latitude", l1).appendQueryParameter("longitude", l2);
+                String query = builder.build().getEncodedQuery();
+                Log.d("QUERY: ", query);
+
+                // Open connection for sending data
+                OutputStream os = conn1.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(query);
+                writer.flush();
+                writer.close();
+                os.close();
+                conn1.connect();
+
+            } catch(Exception f){
+                f.printStackTrace();
+                return "exc";
+            }try {
+
+                int response_code = conn1.getResponseCode();
+
+                // Check if successful connection made
+                if (response_code == HttpURLConnection.HTTP_OK) {
+
+                    // Read data sent from server
+                    InputStream input = conn1.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                    StringBuilder result = new StringBuilder();
+                    String line;
+
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line);
+                    }
+
+                    // Pass data to onPostExecute method
+                    return(result.toString());
+
+                }else{
+
+                    return "unsuccessful";
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "exc";
+            } finally {
+                conn1.disconnect();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            if (result.equals("true")) {
+                Log.d("Location sent", "server");
+            } else if (result.equals("false")) {
+                Log.d("Location not sent", "server");
+            } else if(result.equals("exc")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(OptionList.this);
+
+                        // Setting Dialog Title
+                        alertDialog.setTitle("Location settings");
+
+                        // Setting Dialog Message
+                        alertDialog.setMessage("Location is not enabled. Please enable it in the settings menu to use the app.");
+
+                        // On pressing Settings button
+                        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int which) {
+                                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                OptionList.this.startActivity(intent);
+                            }
+                        });
+
+                        alertDialog.setCancelable(false);
+
+                        // Showing Alert Message
+                        alertDialog.show();
+                    }
+                });
+            }
         }
     }
 
