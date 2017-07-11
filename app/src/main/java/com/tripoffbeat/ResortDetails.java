@@ -60,6 +60,7 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
     ProgressDialog pDialog;
     TextView res_n, description, dist, time, price, room_type, state_name, city_name, rating;
     View parentLayout;
+    Logout logout;
 
     // Creating JSON Parser object
     JSONparser jParser = new JSONparser();
@@ -70,6 +71,7 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
         //layout defined in activity_resort_details
         setContentView(R.layout.activity_resort_details);
         parentLayout = findViewById(android.R.id.content);
+        logout = new Logout(ResortDetails.this);
         //TextViews used to set text
         res_n = (TextView) findViewById(R.id.res_n);
         description = (TextView) findViewById(R.id.description);
@@ -113,10 +115,7 @@ public class ResortDetails extends AppCompatActivity implements OnMapReadyCallba
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case R.id.action_logout:
-                Intent i = new Intent(getApplicationContext(), Popup.class);
-                /*i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                Toast.makeText(getApplicationContext(), "Logged out successfully", Toast.LENGTH_LONG).show();*/
-                startActivity(i);
+                logout.showLogout();
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -242,6 +242,12 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("Pass", p);
                     sessions.createLoginSession(e, p, true);
                 }
+                else{
+                    String e = etEmail.getText().toString();
+                    String p = etPassword.getText().toString();
+                    intent.putExtra("email", e);
+                    intent.putExtra("pass", p);
+                }
                 startActivity(intent);
                 MainActivity.this.finish();
 

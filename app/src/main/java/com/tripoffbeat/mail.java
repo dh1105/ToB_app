@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,12 +40,14 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
     DatePickerDialog.OnDateSetListener date1;
     String btn_ci, btn_co, n, a, k, r, m, d;
     Intent i;
+    Logout logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Sets the layout of the screen based on the XML file activity_mail
         setContentView(R.layout.activity_mail);
+        logout =  new Logout(mail.this);
         //Textboxes to fill
         mail = (EditText) findViewById(R.id.client_email);
         btn_checkin = (EditText) findViewById(R.id.btn_checkin);
@@ -113,7 +116,7 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
                 r = rooms.getText().toString();
                 m = mail.getText().toString();
                 d = days.getText().toString();
-                if(btn_co.equals("") || btn_ci.equals("") || n.equals("") || a.equals("") || k.equals("") || r.equals("") || m.equals("") || d.equals("")){
+                if(TextUtils.isEmpty(btn_co) || TextUtils.isEmpty(btn_ci) || TextUtils.isEmpty(n) || TextUtils.isEmpty(a) || TextUtils.isEmpty(k) || TextUtils.isEmpty(r) || TextUtils.isEmpty(m) || TextUtils.isEmpty(d)){
                     Toast.makeText(mail.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
                 }
                 else{
@@ -163,10 +166,7 @@ public class mail extends AppCompatActivity implements View.OnClickListener {
         switch (item.getItemId()){
             case R.id.action_logout:
                 //Opens a pop up window for a logout prompt
-                Intent i = new Intent(getApplicationContext(), Popup.class);
-                /*i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                Toast.makeText(getApplicationContext(), "Logged out successfully", Toast.LENGTH_LONG).show();*/
-                startActivity(i);
+                logout.showLogout();
                 return true;
         }
         return super.onOptionsItemSelected(item);

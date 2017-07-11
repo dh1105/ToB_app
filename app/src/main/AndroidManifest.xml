@@ -64,9 +64,6 @@
         <activity android:name=".web"
             android:parentActivityName="com.tripoffbeat.Result"/>
 
-        <activity android:name=".Popup"
-            android:theme="@style/AppTheme.cust"/>
-
     </application>
 
 </manifest>

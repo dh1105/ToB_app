@@ -84,14 +84,14 @@ public class Sessions {
     }
 
     /**
-     * Check login method wil check user login status
+     * Check login method will check user login status
      * if it is true it will direct you to the OptionList.class
      * */
 
     public void login(){
         if(this.isLoggedIn()){
             Intent i = new Intent(_context, OptionList.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
             _context.startActivity(i);
         }
     }
@@ -116,6 +116,21 @@ public class Sessions {
 
         // Staring Login Activity
         _context.startActivity(i);
+    }
+
+    /**
+     * Get stored session data
+     * */
+    public HashMap<String, String> getUserDetails(){
+        HashMap<String, String> user = new HashMap<String, String>();
+        // user name
+        user.put(KEY_NAME, pref.getString(KEY_NAME, null));
+
+        // user email id
+        user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
+
+        // return user
+        return user;
     }
 
     /**

@@ -67,12 +67,14 @@ public class web extends AppCompatActivity {
     JSONArray act = null;
     String act_name [];
     ActionBar actionBar;
+    Logout logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
         parentLayout = findViewById(android.R.id.content);
+        logout = new Logout(web.this);
         webView = (WebView) findViewById(R.id.webview);
         in = getIntent();
         String act_i = in.getStringExtra("activity");
@@ -203,10 +205,7 @@ public class web extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case R.id.action_logout:
-                Intent i = new Intent(getApplicationContext(), Popup.class);
-                /*i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                Toast.makeText(getApplicationContext(), "Logged out successfully", Toast.LENGTH_LONG).show();*/
-                startActivity(i);
+                logout.showLogout();
                 return true;
         }
         return super.onOptionsItemSelected(item);

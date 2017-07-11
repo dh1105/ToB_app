@@ -2090,5 +2090,85 @@ public class JSONparser {
         // return JSON String
         return jObj;
     }
+
+    public JSONObject makeHttpRequest26(String get_user, String email, String pass) {
+
+        try {
+            // Enter URL address where your php file resides
+            u = new URL(get_user);
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // Making HTTP request
+        try {
+            // check for request method
+            conn = (HttpURLConnection)u.openConnection();
+            conn.setReadTimeout(READ_TIMEOUT);
+            conn.setConnectTimeout(CONNECTION_TIMEOUT);
+            conn.setRequestMethod("POST");
+
+            // setDoInput and setDoOutput method depict handling of both send and receive
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+
+            // Append parameters to URL
+            Uri.Builder builder = new Uri.Builder().appendQueryParameter("email", email).appendQueryParameter("pass", pass);
+            Log.d("Format: ", builder.toString());
+            String query = builder.build().getEncodedQuery();
+
+            // Open connection for sending data
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            writer.write(query);
+            writer.flush();
+            writer.close();
+            os.close();
+            conn.connect();
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+
+            int response_code = conn.getResponseCode();
+
+            // Check if successful connection made
+            if (response_code == HttpURLConnection.HTTP_OK) {
+                // Read data sent from server
+                InputStream input = conn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                StringBuilder result = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);
+                }
+                json = result.toString();
+                Log.d("Data received: ", json);
+            }
+
+        } catch (IOException e) {
+            Log.e("Buffer Error: ", "Error converting result " + e.toString());
+        }finally {
+            conn.disconnect();
+        }
+
+        // try parse the string to a JSON object
+        try {
+            jObj = new JSONObject(json);
+            Log.d("jObj: ", jObj.toString());
+        } catch (JSONException e) {
+            Log.e("JSON Parser: ", "Error parsing data " + e.toString());
+        }
+
+        // return JSON String
+        return jObj;
+    }
 }
 

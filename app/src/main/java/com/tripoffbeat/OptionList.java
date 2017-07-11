@@ -6,15 +6,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Path;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.IdRes;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -53,8 +59,12 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Activity used to select the filters
@@ -84,6 +94,11 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
     View parentLayout;
     Double lat, lng;
     GPSTracker mygps;
+    String address, cityName, stateName, comp_ad, currentDateTimeString, email, pass, user_id;
+    HashMap<String, String> getUserDetails;
+    JSONparser jParser = new JSONparser();
+    JSONArray j;
+    Logout logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +108,7 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
         parentLayout = findViewById(android.R.id.content);
         //Sessions object
         sessions = new Sessions(getApplicationContext());
+        logout =  new Logout(OptionList.this);
         i = getIntent();
         //retrieves login true or false
         bool = sessions.getVal();
@@ -101,7 +117,20 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
         //bool is true only when you check the keep me logged in box in the previous activity
         if(bool.equals(true)) {
             sessions.checkLogin();
+            getUserDetails = sessions.getUserDetails();
+            email = getUserDetails.get("Email");
+            pass = getUserDetails.get("Pass");
+            Log.d("email: ", email);
+            Log.d("pass", pass);
+        } else if(bool.equals(false)){
+            email = i.getStringExtra("email");
+            pass = i.getStringExtra("pass");
+            Log.d("email1: ", email);
+            Log.d("pass1", pass);
         }
+        new GetUser().execute();
+        currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+        Log.d("date and time: ", currentDateTimeString);
         try {
             if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(OptionList.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
@@ -112,10 +141,29 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
 
                     lat = mygps.getLatitude();
                     lng = mygps.getLongitude();
+                    Geocoder geocoder = new Geocoder(OptionList.this, Locale.getDefault());
+                    try{
+                        List <Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+                        Log.d("Address: ", addresses.toString());
+                        if(addresses.size()>0) {
+                            address = addresses.get(0).getSubLocality();
+                            cityName = addresses.get(0).getLocality();
+                            stateName = addresses.get(0).getAdminArea();
+                            Log.d("Address: ", address);
+                            Log.d("City: ", cityName);
+                            Log.d("State", stateName);
+                            comp_ad = address.concat(", " + cityName).concat(", " +stateName);
+                            //Toast.makeText(OptionList.this, "Address: " + comp_ad, Toast.LENGTH_LONG).show();
+                        }
+                    } catch(IOException e){
+                        e.printStackTrace();
+                    }
+                    new SendLoc1().execute();
                 }else{
                     // can't get location
                     // GPS or Network is not enabled
                     // Ask user to enable GPS/network in settings
+                    Log.d("Location access", "false");
                     mygps.showSettingsAlert();
                 }
             }
@@ -123,7 +171,6 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
         catch(Exception j){
             j.printStackTrace();
         }
-        new SendLoc1().execute();
         //reference to all variables
         min_txt = (TextView) findViewById(R.id.min_txt);
         max_txt = (TextView) findViewById(R.id.max_txt);
@@ -362,7 +409,6 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
         });
 
         Log.i(TAG, "onCreate()");
-
     }
 
     @Override
@@ -398,6 +444,7 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
         Log.i(TAG, "onStop()");
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -410,10 +457,7 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
         switch (item.getItemId()){
             case R.id.action_logout:
                 //Gives logout pop up
-                Intent i = new Intent(getApplicationContext(), Popup.class);
-                /*i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                Toast.makeText(getApplicationContext(), "Logged out successfully", Toast.LENGTH_LONG).show();*/
-                startActivity(i);
+                logout.showLogout();
                 return true;
 
             case R.id.action_prev:
@@ -507,6 +551,51 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
         }
     }
 
+    private class GetUser extends AsyncTask<String, String, String>{
+
+        private String get_user = "http://139.59.34.30/get_user.php";
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            JSONObject json = null;
+            try{
+                json = jParser.makeHttpRequest26(get_user, email, pass);
+                j = json.getJSONArray("id");
+                user_id = j.getString(0);
+                Log.d("user_id", user_id);
+            } catch(JSONException e){
+                e.printStackTrace();
+            } catch(NullPointerException f){
+                f.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(OptionList.this);
+                        alertDialog.setTitle("Not connected to the internet");
+                        alertDialog.setMessage("Please check if your WiFi/3G/4G is on.");
+
+                        // On pressing Settings button
+                        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int which) {
+                                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                                OptionList.this.startActivity(intent);
+                            }
+                        });
+
+                        // on pressing cancel button
+                        alertDialog.setCancelable(false);
+
+                        // Showing Alert Message
+                        alertDialog.show();
+                    }
+                });
+                f.printStackTrace();
+            }
+            return null;
+        }
+    }
+
     private class SendLoc1 extends AsyncTask<String, String, String>{
 
         HttpURLConnection conn1;
@@ -533,7 +622,7 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
                 String l1 = Double.toString(lat);
                 String l2 = Double.toString(lng);
                 // Append parameters to URL
-                Uri.Builder builder = new Uri.Builder().appendQueryParameter("latitude", l1).appendQueryParameter("longitude", l2);
+                Uri.Builder builder = new Uri.Builder().appendQueryParameter("latitude", l1).appendQueryParameter("longitude", l2).appendQueryParameter("address", comp_ad).appendQueryParameter("date_time", currentDateTimeString).appendQueryParameter("user_id", user_id);
                 String query = builder.build().getEncodedQuery();
                 Log.d("QUERY: ", query);
 
@@ -587,10 +676,11 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
 
             if (result.equals("true")) {
                 Log.d("Location sent", "server");
-            } else if (result.equals("false")) {
+            } else if (result.equals("false") || result.equals("unsuccessful")) {
                 Log.d("Location not sent", "server");
             } else if(result.equals("exc")){
-                runOnUiThread(new Runnable() {
+                Log.d("Location not sent", "error");
+                /*runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(OptionList.this);
@@ -614,7 +704,7 @@ public class OptionList extends AppCompatActivity implements View.OnClickListene
                         // Showing Alert Message
                         alertDialog.show();
                     }
-                });
+                });*/
             }
         }
     }

@@ -54,6 +54,8 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
     // Creating JSON Parser object
     JSONparser jParser = new JSONparser();
 
+    Logout logout;
+
     // url to get all products list
     private static String url_all_resorts = "http://139.59.34.30/get_lulz.php";
 
@@ -109,6 +111,8 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.all_resorts);
         parentLayout = findViewById(android.R.id.content);
+
+        logout =  new Logout(Result.this);
 
         new LoadAllResorts().execute();
         resortsList = new ArrayList<HashMap<String, String>>();
@@ -441,10 +445,7 @@ public class Result extends AppCompatActivity implements SearchView.OnQueryTextL
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
             case R.id.action_logout:
-                Intent i = new Intent(getApplicationContext(), Popup.class);
-                /*i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-                Toast.makeText(getApplicationContext(), "Logged out successfully", Toast.LENGTH_LONG).show();*/
-                startActivity(i);
+                logout.showLogout();
                 return true;
         }
         return super.onOptionsItemSelected(item);
